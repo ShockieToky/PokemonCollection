@@ -1,238 +1,241 @@
-// // "https://api.pokemontcg.io/v2/cards"
+import axios from "axios";
+import { writeFileSync, readFileSync, existsSync, mkdirSync } from 'node:fs';
+import { dirname } from 'node:path';
+import pLimit from 'p-limit';
 
-// /**
-//  * 
-//  * {
-//       "id": "hgss4-1",
-//       "name": "Aggron",
-//       "types": [
-//         "Metal"
-//       ],
-//       "set": {
-//         "id": "hgss4",
-//         "name": "HS—Triumphant",
-//         "series": "HeartGold & SoulSilver",
-//         "printedTotal": 102,
-//         "total": 103,
-//         "releaseDate": "2010/11/03",
-//         "symbol": "https://images.pokemontcg.io/hgss4/symbol.png",
-//       },
-//       "number": "1",
-//       "rarity": "Rare Holo",
-//       "nationalPokedexNumbers": [306],
-//       "images_small": "https://images.pokemontcg.io/hgss4/1.png",
-//       "images_large": "https://images.pokemontcg.io/hgss4/1_hires.png",
-//     }
-//  */
+const CONFIG = {
+    baseUrl: 'https://api.pokemontcg.io/v2',
+    pageSize: 250,
+    retryAttempts: 3,
+    retryDelay: 2000,
+    concurrency: 3,
+    rateLimitDelay: 1000,
+    dataDir: './data',
+    stateFile: './data/fetch_state.json',
+    cardsFile: './data/cards.json',
+    setsFile: './data/sets.json',
+};
 
+const ensureDirectoryExists = (filePath) => {
+    const dir = dirname(filePath);
+    if (!existsSync(dir)) {
+        mkdirSync(dir, { recursive: true });
+    }
+};
 
+const logger = {
+    info: (message) => console.log(`[${new Date().toISOString()}] INFO: ${message}`),
+    error: (message) => console.error(`[${new Date().toISOString()}] ERROR: ${message}`),
+    success: (message) => console.log(`[${new Date().toISOString()}] SUCCESS: ${message}`),
+    progress: (message) => process.stdout.write(`\r[${new Date().toISOString()}] ${message}`)
+};
 
+const apiClient = {
+    async get(endpoint, params = {}, attempts = 0) {
+        try {
+            const url = `${CONFIG.baseUrl}${endpoint}`;
+            const response = await axios.get(url, { params });
+            await new Promise(resolve => setTimeout(resolve, CONFIG.rateLimitDelay));
+            return response.data;
+        } catch (error) {
+            if (attempts < CONFIG.retryAttempts) {
+                const delay = CONFIG.retryDelay * (attempts + 1);
+                logger.error(`Request failed, retrying in ${delay}ms... (${attempts + 1}/${CONFIG.retryAttempts})`);
+                await new Promise(resolve => setTimeout(resolve, delay));
+                return this.get(endpoint, params, attempts + 1);
+            }
+            throw new Error(`API request failed after ${CONFIG.retryAttempts} attempts: ${error.message}`);
+        }
+    }
+};
 
+const stateManager = {
+    saveState(sets, currentSetIndex, currentPage, cards) {
+        const state = {
+            setsCompleted: sets,
+            currentSetIndex,
+            currentPage,
+            cardsCount: cards.length,
+            lastUpdate: new Date().toISOString()
+        };
+        ensureDirectoryExists(CONFIG.stateFile);
+        writeFileSync(CONFIG.stateFile, JSON.stringify(state, null, 2));
+        writeFileSync(CONFIG.cardsFile, JSON.stringify(cards, null, 2));
+        logger.info(`State saved: Set index ${currentSetIndex}, Page ${currentPage}, Cards: ${cards.length}`);
+    },
 
-// id,
-// name,
-// number,
-// set_id,
-// rarity,
-// nationalPokedexNumbers,
-// images_small,
-// images_large
+    loadState() {
+        if (existsSync(CONFIG.stateFile) && existsSync(CONFIG.cardsFile)) {
+            logger.info('Loading previous state...');
+            const state = JSON.parse(readFileSync(CONFIG.stateFile, 'utf-8'));
+            const cards = JSON.parse(readFileSync(CONFIG.cardsFile, 'utf-8'));
+            return { state, cards };
+        }
+        logger.info('No previous state found, starting fresh');
+        return null;
+    }
+};
 
+const dataFetcher = {
+    async fetchSets() {
+        try {
+            logger.info('Fetching all Pokemon TCG sets...');
+            const response = await apiClient.get('/sets');
+            const { data } = response;
+            if (!data || !Array.isArray(data)) {
+                throw new Error('Invalid response format for sets');
+            }
+            const sets = data.map((set) => ({
+                id: set.id,
+                name: set.name,
+                series: set.series,
+                printedTotal: set.printedTotal,
+                total: set.total,
+                releaseDate: set.releaseDate,
+                symbolUrl: set.images?.symbol || null,
+            }));
+            ensureDirectoryExists(CONFIG.setsFile);
+            writeFileSync(CONFIG.setsFile, JSON.stringify(sets, null, 2));
+            logger.success(`Retrieved ${sets.length} sets`);
+            return sets;
+        } catch (error) {
+            logger.error(`Failed to fetch sets: ${error.message}`);
+            throw error;
+        }
+    },
 
+    async fetchSetPage(setId, page) {
+        try {
+            const params = {
+                page,
+                pageSize: CONFIG.pageSize,
+                q: `set.id:${setId}`
+            };
+            const response = await apiClient.get('/cards', params);
+            const { data, totalCount } = response;
+            if (!data || !Array.isArray(data)) {
+                throw new Error(`Invalid response format for set ${setId}`);
+            }
+            const cards = data.map((card) => ({
+                id: card.id,
+                name: card.name,
+                set_id: card.set.id,
+                number: card.number,
+                rarity: card.rarity || 'Unknown',
+                nationalPokedexNumbers: card.nationalPokedexNumbers ? JSON.stringify(card.nationalPokedexNumbers).replace(/[\[\]]/g, '') : null,
+                images_small: card.images?.small || null,
+                images_large: card.images?.large || null,
+            }));
+            const hasMorePages = page * CONFIG.pageSize < totalCount;
+            return { cards, hasMorePages, totalCount };
+        } catch (error) {
+            logger.error(`Failed to fetch set ${setId} page ${page}: ${error.message}`);
+            throw error;
+        }
+    },
 
+    async fetchFullSet(setId, startPage = 1, existingCards = []) {
+        const allCards = [...existingCards];
+        let page = startPage;
+        let hasMorePages = true;
+        let totalCards = 0;
+        logger.info(`Fetching cards for set ${setId} starting from page ${startPage}`);
+        try {
+            while (hasMorePages) {
+                logger.progress(`Set ${setId} - Fetching page ${page}...`);
+                const result = await this.fetchSetPage(setId, page);
+                allCards.push(...result.cards);
+                hasMorePages = result.hasMorePages;
+                totalCards = result.totalCount;
+                page++;
+            }
+            logger.info(`\nCompleted set ${setId}: ${allCards.length}/${totalCards} cards fetched`);
+            return allCards;
+        } catch (error) {
+            logger.error(`Error while fetching set ${setId}, completed ${allCards.length} cards on page ${page - 1}`);
+            throw { error, lastCompletedPage: page - 1, cards: allCards };
+        }
+    }
+};
+const main = async () => {
+    let allCards = [];
+    let currentSetIndex = 0;
+    let currentPage = 1;
+    try {
+        ensureDirectoryExists(CONFIG.dataDir);
+        const savedState = stateManager.loadState();
+        const allSets = existsSync(CONFIG.setsFile)
+            ? JSON.parse(readFileSync(CONFIG.setsFile, 'utf-8'))
+            : await dataFetcher.fetchSets();
+        if (savedState) {
+            allCards = savedState.cards;
+            currentSetIndex = savedState.state.currentSetIndex;
+            currentPage = savedState.state.currentPage;
+            logger.info(`Resuming from set index ${currentSetIndex} (${allSets[currentSetIndex]?.id}), page ${currentPage}, with ${allCards.length} cards already fetched`);
+        } else {
+            logger.info(`Starting fresh with ${allSets.length} sets to process`);
+        }
+        const limit = pLimit(CONFIG.concurrency);
+        const remainingSets = allSets.slice(currentSetIndex);
+        logger.info(`Processing ${remainingSets.length} remaining sets with concurrency of ${CONFIG.concurrency}`);
+        for (let i = 0; i < remainingSets.length; i += CONFIG.concurrency) {
+            const batch = remainingSets.slice(i, i + CONFIG.concurrency);
+            const batchIndex = currentSetIndex + i;
+            const batchPromises = batch.map((set, index) => {
+                const setIndex = batchIndex + index;
+                const existingCardsForSet = allCards.filter(card => card.set_id === set.id);
+                const startPage = setIndex === currentSetIndex ? currentPage : 1;
+                return limit(async () => {
+                    logger.info(`Starting set ${setIndex + 1}/${allSets.length}: ${set.id} (${set.name})`);
+                    try {
+                        const setCards = await dataFetcher.fetchFullSet(set.id, startPage, existingCardsForSet);
+                        return {
+                            success: true,
+                            setIndex,
+                            setId: set.id,
+                            cards: setCards
+                        };
+                    } catch (error) {
+                        return {
+                            success: false,
+                            setIndex,
+                            setId: set.id,
+                            error,
+                            lastCompletedPage: error.lastCompletedPage,
+                            cards: error.cards || []
+                        };
+                    }
+                });
+            });
+            const results = await Promise.all(batchPromises);
+            let hasError = false;
+            for (const result of results) {
+                if (result.success) {
+                    allCards = allCards.filter(card => card.set_id !== result.setId);
+                    allCards.push(...result.cards);
+                    logger.success(`Set ${result.setId} completed (${result.cards.length} cards)`);
+                } else {
+                    hasError = true;
+                    allCards = allCards.filter(card => card.set_id !== result.setId);
+                    allCards.push(...result.cards);
+                    logger.error(`Failed processing set ${result.setId} at page ${result.lastCompletedPage || '?'}`);
+                    stateManager.saveState(allSets, result.setIndex, result.lastCompletedPage + 1 || 1, allCards);
+                }
+            }
+            if (!hasError) {
+                const nextSetIndex = batchIndex + batch.length;
+                stateManager.saveState(allSets, nextSetIndex, 1, allCards);
+            }
+            if (hasError) {
+                throw new Error('Batch processing encountered errors, stopping execution');
+            }
+        }
+        logger.success(`All done! Downloaded information for ${allCards.length} cards across ${allSets.length} sets`);
+    } catch (error) {
+        logger.error(`Fatal error: ${error.message}`);
+        logger.info('You can restart the script to resume from the last saved state');
+        process.exit(1);
+    }
+};
 
-
-
-    const axios = require("axios");
-    
-    
-    const fetchSets = async () => {
-        const response = await axios.get('https://api.pokemontcg.io/v2/sets');
-        const data = await response.data.data;
-        console.log(data);
-        
-
-        // for (const set of sets) {
-        // }
-    };
-
-    fetchSets();
-    
-    
-    // const insertSets = async (sets) => {
-    //     const connection = await pool.getConnection();
-    //     try {
-    //         await connection.beginTransaction();
-    //         for (const set of sets) {
-    //             const query = `INSERT INTO sets (
-    //             id, 
-    //             name,
-    //             series,
-    //             printedTotal,
-    //             total, 
-    //             releaseDate,
-    //             symbol_images) 
-    //             VALUES (?,?,?,?,?,?,?) 
-    //             ON DUPLICATE KEY UPDATE 
-    //             name=VALUES(name),
-    //             series=VALUES(series),
-    //             printedTotal=VALUES(printedTotal),
-    //             total=VALUES(total),
-    //             releaseDate=VALUES(releaseDate),
-    //             symbol_images=VALUES(symbol_images)`;
-    //             await connection.execute(query, [
-    //                 set.id,
-    //                 set.name,
-    //                 set.series,
-    //                 set.printedTotal,
-    //                 set.total,
-    //                 set.releaseDate,
-    //                 set.images.symbol,
-    //             ]);
-    //             await connection.commit();
-    //         }
-    //     }
-    //     catch (error) {
-    //         await connection.rollback();
-    //         throw error;
-    //     }
-    //     finally {
-    //         connection.release();
-    //     }
-    // };
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-//     const fetchCards = async (setId) => {
-//         let page = 1;
-//         let hasMorePage = true;
-    
-//         while (hasMorePage) {
-//             const response = await axios.get('https://api.pokemontcg.io/v2/cards', {
-//                 params: {
-//                     page,
-//                     pageSize: 250,
-//                     q: `set.id:${setId}`
-//                 }
-//             });
-    
-//             const { data, totalCount } = response.data;
-//             await insertCards(data);
-//             hasMorePage = page * 250 < totalCount;
-//             page++;
-//             await new Promise(resolve => setTimeout(resolve, 1000));
-//         }
-    
-    
-    
-//     };
-    
-    
-//     const insertCards = async (cards) => {
-//         const connection = await pool.getConnection();
-//         try {
-//             await connection.beginTransaction();
-    
-//             for (const card of cards) {
-//                 const query = `
-//                 INSERT INTO cards (
-//                 id,
-//                 name,
-//                 set_id,
-//                 number,
-//                 rarity,
-//                 nationalPokedexNumbers,
-//                 images_small,
-//                 images_large
-//                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-//                  ON DUPLICATE KEY UPDATE
-//                     name=VALUES(name),
-//                     set_id=VALUES(set_id),
-//                     number=VALUES(number),
-//                     rarity=VALUES(rarity),
-//                     nationalPokedexNumbers=VALUES(nationalPokedexNumbers),
-//                     images_small=VALUES(images_small),
-//                     images_large=VALUES(images_large)
-//                 `;
-//                 await connection.execute(query, [
-//                     card.id,
-//                     card.name,
-//                     card.set.id,
-//                     card.number,
-//                     card.rarity,
-//                     JSON.stringify(card.nationalPokedexNumbers),
-//                     card.images.small,
-//                     card.images.large,
-//                 ]);
-    
-//                 if (card.types) {
-//                     for (const type of card.types) {
-//                         const id = await getOrCreate(connection, type.name);
-//                         await connection.execute(
-//                             'INSERT INTO card_types (card_id, type_id) VALUES (?,?)',
-//                             [
-//                                 card.id,
-//                                 id
-//                             ]
-//                         )
-//                     }
-//                 }
-//                 await connection.commit();
-//             }
-//         }
-//         catch (error) {
-//             await connection.rollback();
-//             throw error;
-//         }
-//         finally {
-//             connection.release();
-//         }
-//     };
-    
-    
-    
-    
-//     const getOrCreate = async (connection, type) => {
-//         const [rows] = await connection.execute('INSERT IGNORE INTO types (name) VALUES (?)', [type]);
-//         const [typeRow] = await connection.execute('SELECT id FROM types WHERE name = ?', [type]);
-//         return typeRow[0].id;
-//     };
-    
-//     const main = async () => {
-//         try {
-//             const sets = await fetchSets();
-//             // await insertSets(sets);
-//             for (const set of sets) {
-//                 await fetchCards(set.id);
-//             }
-    
-//             await pool.end();
-//         } catch (error) {
-//             console.error(error);
-//             process.exit(1);
-//         }
-//     }
-    
-//     main();
-
-
+main();
