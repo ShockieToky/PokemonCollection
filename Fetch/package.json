@@ -1,0 +1,16 @@
+{
+  "name": "fetch",
+  "version": "1.0.0",
+  "main": "fetch_card.js",
+  "scripts": {
+    "start": "node fetch_card.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "mysql2": "^3.12.0"
+  }
+}
