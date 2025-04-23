@@ -7,14 +7,14 @@ use App\Models\Set;
 
 class SetController extends Controller
 {
-    // List all sets
+    // liste de tous les sets
     public function index()
     {
         $sets = Set::all();
         return response()->json($sets);
     }
 
-    // Store a new set
+    // Ajouter un nouveau set
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -30,14 +30,14 @@ class SetController extends Controller
         return response()->json($set, 201);
     }
 
-    // Show a specific set by ID
+    // Montrer un set spécifique par ID
     public function show($id)
     {
         $set = Set::findOrFail($id);
         return response()->json($set);
     }
 
-    // Update an existing set
+    // Mettre à jour un set spécifique par ID
     public function update(Request $request, $id)
     {
         $validatedData = $request->validate([
@@ -54,11 +54,28 @@ class SetController extends Controller
         return response()->json($set);
     }
 
-    // Delete a specific set by ID
+    // Supprimer un set spécifique par ID
     public function destroy($id)
     {
         $set = Set::findOrFail($id);
         $set->delete();
         return response()->json(['message' => 'Set deleted successfully']);
     }
+
+    // Obtenir le set le plus complet
+    public function mostComplete()
+{
+    $set = Set::withCount('cards')
+        ->orderBy('cards_count', 'desc')
+        ->first();
+
+    if ($set) {
+        return response()->json([
+            'name' => $set->name,
+            'total' => $set->cards_count,
+        ]);
+    }
+
+    return response()->json(['message' => 'No sets found'], 404);
+}
 }
