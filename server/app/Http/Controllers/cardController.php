@@ -63,4 +63,25 @@ class cardController extends Controller
         $card->delete();
         return response()->json(['message' => 'Card deleted successfully']);
     }
+
+    // Affiche le nombre total de cartes
+    public function totalCards()
+    {
+        $total = Card::count();
+
+        return response()->json([
+            'total' => $total,
+        ]);
+    }
+
+    // Affiche les 6 cartes les plus récentes
+    public function recentCards()
+    {
+        $recentCards = Card::whereNotNull('obtained_at')
+            ->orderBy('obtained_at', 'desc')
+            ->take(6)
+            ->get();
+
+        return response()->json($recentCards);
+    }
 }

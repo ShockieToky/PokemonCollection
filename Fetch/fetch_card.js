@@ -148,66 +148,66 @@
 //     };
     
     
-//     const insertCards = async (cards) => {
-//         const connection = await pool.getConnection();
-//         try {
-//             await connection.beginTransaction();
+    // const insertCards = async (cards) => {
+    //     const connection = await pool.getConnection();
+    //     try {
+    //         await connection.beginTransaction();
     
-//             for (const card of cards) {
-//                 const query = `
-//                 INSERT INTO cards (
-//                 id,
-//                 name,
-//                 set_id,
-//                 number,
-//                 rarity,
-//                 nationalPokedexNumbers,
-//                 images_small,
-//                 images_large
-//                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-//                  ON DUPLICATE KEY UPDATE
-//                     name=VALUES(name),
-//                     set_id=VALUES(set_id),
-//                     number=VALUES(number),
-//                     rarity=VALUES(rarity),
-//                     nationalPokedexNumbers=VALUES(nationalPokedexNumbers),
-//                     images_small=VALUES(images_small),
-//                     images_large=VALUES(images_large)
-//                 `;
-//                 await connection.execute(query, [
-//                     card.id,
-//                     card.name,
-//                     card.set.id,
-//                     card.number,
-//                     card.rarity,
-//                     JSON.stringify(card.nationalPokedexNumbers),
-//                     card.images.small,
-//                     card.images.large,
-//                 ]);
+    //         for (const card of cards) {
+    //             const query = `
+    //             INSERT INTO cards (
+    //             id,
+    //             name,
+    //             set_id,
+    //             number,
+    //             rarity,
+    //             nationalPokedexNumbers,
+    //             images_small,
+    //             images_large
+    //             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    //              ON DUPLICATE KEY UPDATE
+    //                 name=VALUES(name),
+    //                 set_id=VALUES(set_id),
+    //                 number=VALUES(number),
+    //                 rarity=VALUES(rarity),
+    //                 nationalPokedexNumbers=VALUES(nationalPokedexNumbers),
+    //                 images_small=VALUES(images_small),
+    //                 images_large=VALUES(images_large)
+    //             `;
+    //             await connection.execute(query, [
+    //                 card.id,
+    //                 card.name,
+    //                 card.set.id,
+    //                 card.number,
+    //                 card.rarity,
+    //                 JSON.stringify(card.nationalPokedexNumbers),
+    //                 card.images.small,
+    //                 card.images.large,
+    //             ]);
     
-//                 if (card.types) {
-//                     for (const type of card.types) {
-//                         const id = await getOrCreate(connection, type.name);
-//                         await connection.execute(
-//                             'INSERT INTO card_types (card_id, type_id) VALUES (?,?)',
-//                             [
-//                                 card.id,
-//                                 id
-//                             ]
-//                         )
-//                     }
-//                 }
-//                 await connection.commit();
-//             }
-//         }
-//         catch (error) {
-//             await connection.rollback();
-//             throw error;
-//         }
-//         finally {
-//             connection.release();
-//         }
-//     };
+    //             if (card.types) {
+    //                 for (const type of card.types) {
+    //                     const id = await getOrCreate(connection, type.name);
+    //                     await connection.execute(
+    //                         'INSERT INTO card_types (card_id, type_id) VALUES (?,?)',
+    //                         [
+    //                             card.id,
+    //                             id
+    //                         ]
+    //                     )
+    //                 }
+    //             }
+    //             await connection.commit();
+    //         }
+    //     }
+    //     catch (error) {
+    //         await connection.rollback();
+    //         throw error;
+    //     }
+    //     finally {
+    //         connection.release();
+    //     }
+    // };
     
     
     

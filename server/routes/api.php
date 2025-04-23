@@ -19,3 +19,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('/sets/most-complete', [SetController::class, 'mostComplete']);
+Route::get('/cards/total', [CardController::class, 'totalCards']);
+Route::get('/cards/recent', [CardController::class, 'recentCards']);
