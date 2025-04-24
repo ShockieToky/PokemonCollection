@@ -84,4 +84,26 @@ class cardController extends Controller
 
         return response()->json($recentCards);
     }
+
+    // Recherche des cartes par différents critères
+    public function searchCards(Request $request)
+    {
+        $query = Card::query();
+
+        if ($request->has('set_id')) {
+            $query->where('set_id', $request->query('set_id'));
+        }
+
+        if ($request->has('pokemon')) {
+            $query->where('name', $request->query('pokemon'));
+        }
+
+        if ($request->has('rarity')) {
+            $query->where('rarity', $request->query('rarity'));
+        }
+
+        $cards = $query->get();
+
+        return response()->json($cards);
+    }
 }
