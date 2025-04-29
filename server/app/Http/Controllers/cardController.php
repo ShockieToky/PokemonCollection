@@ -106,4 +106,23 @@ class cardController extends Controller
 
         return response()->json($cards);
     }
+    
+    public function addToCollection($id)
+    {
+        $card = Card::findOrFail($id);
+        $card->obtained = true;
+        $card->obtained_at = now();
+        $card->save();
+
+        return response()->json(['message' => 'Card added to collection successfully']);
+    }
+
+    public function addToWishlist($id)
+    {
+        $card = Card::findOrFail($id);
+        $card->whislisted = true;
+        $card->save();
+
+        return response()->json(['message' => 'Card added to wishlist successfully']);
+    }
 }
