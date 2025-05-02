@@ -4,6 +4,7 @@ import AffichageSetComplet from '../components/affichageSetComplet';
 import AffichageNombresCartes from '../components/affichageNombresCartes';
 import AffichageCartesRécentes from '../components/affichageCartesRécentes';
 import RechercheAccueil from '../components/rechercheAccueil';
+import AffichageRecherche from '../components/affichageRecherche';
 
 const Accueil = () => {
     return (

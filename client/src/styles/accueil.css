@@ -1,0 +1,22 @@
+.accueil {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+}
+
+.affichageCartes {
+    grid-area: 1 / 1 / 7 / 5;
+    background-color: #FFCC33;
+}
+
+.rechercheAccueil {
+    grid-area: 1 / 5 / 9 / 7;
+    background-color: #FFCCCC;
+}
+
+.redirectionAccueil {
+    grid-area: 7 / 1 / 9 / 5;
+    background-color: #68625d;
+}
