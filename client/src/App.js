@@ -11,6 +11,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Accueil />} />
+        <Route path="*" element={<div>Page not found</div>} />
         {/* <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/tous-les-pokemons" element={<TousLesPokemons />} />
         <Route path="/collection-actuelle" element={<CollectionActuelle />} />
