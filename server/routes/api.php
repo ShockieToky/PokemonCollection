@@ -45,3 +45,9 @@ Route::get('/types', [TypeController::class, 'index']);
 // Route for fetching pokemons and rarities (search-related)
 Route::get('/pokemons', [SearchController::class, 'getPokemons']);
 Route::get('/rarities', [SearchController::class, 'getRarities']);
+
+// Route for fetching cards in the wishlist
+Route::get('/cards/wishlist', [CardController::class, 'getWishlistCards']);
+
+// Route for searching cards in the wishlist
+Route::get('/cards/wishlist/search', [CardController::class, 'searchWishlist']);

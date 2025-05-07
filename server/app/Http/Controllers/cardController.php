@@ -125,4 +125,39 @@ class cardController extends Controller
 
         return response()->json(['message' => 'Card added to wishlist successfully']);
     }
+
+    public function getWishlistCards(Request $request)
+    {
+        $cards = Card::where('whislisted', true)
+            ->paginate(18); // 18 cards per page
+
+        return response()->json($cards);
+    }
+
+    public function searchWishlist(Request $request)
+    {
+        $query = Card::where('whislisted', true);
+
+        if ($request->has('name')) {
+            $query->where('name', 'like', '%' . $request->query('name') . '%');
+        }
+
+        if ($request->has('set')) {
+            $query->where('set_id', $request->query('set'));
+        }
+
+        if ($request->has('rarity')) {
+            $query->where('rarity', $request->query('rarity'));
+        }
+
+        $cards = $query->get();
+
+        return response()->json($cards);
+    }
+
+    public function getRarities()
+    {
+        $rarities = Card::select('rarity')->distinct()->pluck('rarity');
+        return response()->json($rarities);
+    }
 }
