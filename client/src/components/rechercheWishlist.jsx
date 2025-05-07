@@ -7,6 +7,7 @@ const RechercheWishlist = ({ onSearchResults }) => {
     const [rarities, setRarities] = useState([]);
     const [selectedSet, setSelectedSet] = useState('');
     const [selectedRarity, setSelectedRarity] = useState('');
+    const [sortOption, setSortOption] = useState('');
 
     useEffect(() => {
         // Fetch all sets for the dropdown menu
@@ -34,8 +35,9 @@ const RechercheWishlist = ({ onSearchResults }) => {
             name: searchName,
             set: selectedSet,
             rarity: selectedRarity,
+            sort: sortOption,
         });
-    }, [searchName, selectedSet, selectedRarity, onSearchResults]);
+    }, [searchName, selectedSet, selectedRarity, sortOption, onSearchResults]);
 
     return (
         <div>
@@ -75,6 +77,18 @@ const RechercheWishlist = ({ onSearchResults }) => {
                             {rarity}
                         </option>
                     ))}
+                </select>
+            </div>
+            <div>
+                <label>Trier par:</label>
+                <select
+                    value={sortOption}
+                    onChange={(e) => setSortOption(e.target.value)}
+                >
+                    <option value="">-- Aucun tri --</option>
+                    <option value="name-asc">Nom (A à Z)</option>
+                    <option value="set-asc">Set (Ancien au Récent)</option>
+                    <option value="set-desc">Set (Récent à Ancien)</option>
                 </select>
             </div>
         </div>
