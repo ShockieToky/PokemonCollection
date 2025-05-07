@@ -9,7 +9,7 @@ const Wishlist = () => {
                 <h1>Recherche de cartes :</h1>
                 <RechercheWishlist />
             </div>
-            <div className='affichageCartes'>
+            <div className='affichageCartesW'>
                 <AffichageCartesWishlist />
             </div>
         </div>
