@@ -2,20 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Set;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class SetController extends Controller
 {
     // liste de tous les sets
-    public function index()
+    public function index(): JsonResponse
     {
         $sets = Set::all();
+
         return response()->json($sets);
     }
 
     // Ajouter un nouveau set
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
@@ -27,18 +29,20 @@ class SetController extends Controller
         ]);
 
         $set = Set::create($validatedData);
+
         return response()->json($set, 201);
     }
 
     // Montrer un set spécifique par ID
-    public function show($id)
+    public function show(int $id): JsonResponse
     {
         $set = Set::findOrFail($id);
+
         return response()->json($set);
     }
 
     // Mettre à jour un set spécifique par ID
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id): JsonResponse
     {
         $validatedData = $request->validate([
             'name' => 'sometimes|string|max:255',
@@ -51,31 +55,33 @@ class SetController extends Controller
 
         $set = Set::findOrFail($id);
         $set->update($validatedData);
+
         return response()->json($set);
     }
 
     // Supprimer un set spécifique par ID
-    public function destroy($id)
+    public function destroy(int $id): JsonResponse
     {
         $set = Set::findOrFail($id);
         $set->delete();
+
         return response()->json(['message' => 'Set deleted successfully']);
     }
 
     // Obtenir le set le plus complet
-    public function mostComplete()
-{
-    $set = Set::withCount('cards')
-        ->orderBy('cards_count', 'desc')
-        ->first();
+    public function mostComplete(): JsonResponse
+    {
+        $set = Set::withCount('cards')
+            ->orderBy('cards_count', 'desc')
+            ->first();
 
-    if ($set) {
-        return response()->json([
-            'name' => $set->name,
-            'total' => $set->cards_count,
-        ]);
+        if ($set) {
+            return response()->json([
+                'name' => $set->name,
+                'total' => $set->cards_count,
+            ]);
+        }
+
+        return response()->json(['message' => 'No sets found'], 404);
     }
-
-    return response()->json(['message' => 'No sets found'], 404);
-}
 }

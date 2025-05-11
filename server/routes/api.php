@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\CardController;
+use App\Http\Controllers\SearchController;
+use App\Http\Controllers\SetController;
+use App\Http\Controllers\TypeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 

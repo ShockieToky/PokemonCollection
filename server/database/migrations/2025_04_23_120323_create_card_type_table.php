@@ -8,10 +8,8 @@ class CreateCardTypeTable extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('card_type', function (Blueprint $table) {
             $table->id();
@@ -23,10 +21,8 @@ class CreateCardTypeTable extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('card_type');
     }

@@ -2,13 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Card extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'name',
         'number',
@@ -23,7 +21,10 @@ class Card extends Model
         'nationalPokedexNumbers' => 'array',
     ];
 
-    public function set()
+    /**
+     * @return BelongsTo<Set, $this>
+     */
+    public function set(): BelongsTo
     {
         return $this->belongsTo(Set::class);
     }

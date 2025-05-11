@@ -2,13 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Set extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'name',
         'series',
@@ -23,7 +21,10 @@ class Set extends Model
         'symbol_images' => 'string',
     ];
 
-    public function cards()
+    /**
+     * @return HasMany<Card, $this>
+     */
+    public function cards(): HasMany
     {
         return $this->hasMany(Card::class);
     }
