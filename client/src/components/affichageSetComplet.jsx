@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import '../styles/accueil.css';
 
 const AffichageSetComplet = () => {
     const [set, setSet] = useState(null);
@@ -16,10 +17,10 @@ const AffichageSetComplet = () => {
     }, []);
 
     return (
-        <div>
-            <h1>Set le plus complet:</h1>
+        <div className='set-complet'>
+            <h1 className='titre-setcomplet'>Set le plus complet:</h1>
             {set ? (
-                <p>
+                <p className='set-complet-info'>
                     {set.name} - {set.total} cartes
                 </p>
             ) : (
