@@ -38,7 +38,7 @@ Route::get('/cards/recent', [CardController::class, 'recentCards']);
 Route::get('/cards/search', [CardController::class, 'searchCards']);
 
 // Route for fetching all sets
-Route::get('/sets', [SetController::class, 'getSets']);
+Route::get('/sets', [SetController::class, 'index']);
 
 // Route for fetching the most complete set
 Route::get('/sets/most-complete', [SetController::class, 'mostComplete']);

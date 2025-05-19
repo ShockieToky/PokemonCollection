@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import '../styles/accueil.css';
 
 const AffichageNombresCartes = () => {
     const [totalCards, setTotalCards] = useState(null);
@@ -16,10 +17,10 @@ const AffichageNombresCartes = () => {
     }, []);
 
     return (
-        <div>
-            <h1>Nombre total de cartes:</h1>
+        <div className='nombres-cartes'>
+            <h1 className='titre-nbcartes'>Nombre cartes </h1>
             {totalCards !== null ? (
-                <p>{totalCards} cartes</p>
+                <p className='total-cartes'>{totalCards} cartes</p>
             ) : (
                 <p>Chargement...</p>
             )}
