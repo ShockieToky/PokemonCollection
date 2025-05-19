@@ -48,10 +48,10 @@ const AffichageRecherche = ({ selectedSet, selectedPokemon, selectedRarity }) =>
     );
 };
 
-<AffichageRecherche
+{/* <AffichageRecherche
     selectedSet={selectedSet}
     selectedPokemon={selectedPokemon}
     selectedRarity={selectedRarity}
-/>
+/> */}
 
 export default AffichageRecherche;
