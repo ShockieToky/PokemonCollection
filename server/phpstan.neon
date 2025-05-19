@@ -6,4 +6,16 @@ includes:
 parameters:
     paths:
         - app/
+        - tests/
     level: 9
+    ignoreErrors:
+        -
+            message: '#Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage::\w+\(\)#'
+            paths:
+                - tests/Unit/
+                - tests/Feature/
+        -
+            message: '#Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\ExpectsHigherOrderMessage::\w+\(\)#'
+            paths:
+                - tests/Unit/
+                - tests/Feature/
