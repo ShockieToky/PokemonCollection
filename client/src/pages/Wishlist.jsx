@@ -1,19 +1,9 @@
-import React from 'react';
-import AffichageCartesWishlist from '../components/affichageCartesWishlist';
-import RechercheWishlist from '../components/rechercheWishlist';
+import WishlistPage from '../components/wishlistPage';
 
-const Wishlist = () => {
-    return (
-        <div className='wishlist'>
-            <div className='rechercheWishlist'>
-                <h1>Recherche de cartes :</h1>
-                <RechercheWishlist />
-            </div>
-            <div className='affichageCartesW'>
-                <AffichageCartesWishlist />
-            </div>
-        </div>
-    );
-};
+const Wishlist = () => (
+    <div className='wishlist'>
+        <WishlistPage />
+    </div>
+);
 
 export default Wishlist;
