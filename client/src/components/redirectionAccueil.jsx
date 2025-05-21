@@ -11,7 +11,7 @@ const RedirectionAccueil = () => {
             <button onClick={() => navigate('/collection')}>Collection</button>
             <button onClick={() => navigate('/ajoutcarte')}>Ajouter une Carte</button>
             <button onClick={() => navigate('/tous-les-pokemons')}>Tous les Pokémons</button>
-            <button onClick={() => navigate('/tous-les-sets')}>Tous les Sets</button>
+            <button onClick={() => navigate('/set')}>Tous les Sets</button>
         </div>
     );
 };

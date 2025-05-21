@@ -88,4 +88,27 @@ class SetController extends Controller
 
         return response()->json($mostComplete);
     }
+
+    public function stats($setId)
+    {
+        // Total cards in the set
+        $total = \App\Models\Card::where('set_id', $setId)->count();
+
+        // Cards obtained in the set
+        $obtained = \App\Models\Card::where('set_id', $setId)
+            ->where('obtained', true)
+            ->count();
+
+        // Cards not obtained
+        $notObtained = $total - $obtained;
+
+        // Percent completed
+        $percent = $total > 0 ? round(($obtained / $total) * 100, 2) : 0;
+
+        return response()->json([
+            'percent_completed' => $percent,
+            'cards_obtained' => $obtained,
+            'cards_not_obtained' => $notObtained,
+        ]);
+    }
 }

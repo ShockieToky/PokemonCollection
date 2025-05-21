@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import '../styles/accueil.css';
 
 const AffichageCartesRécentes = () => {
     const [recentCards, setRecentCards] = useState([]);
@@ -19,7 +20,7 @@ const AffichageCartesRécentes = () => {
         <div>
             <h1>Cartes récemment obtenues :</h1>
             {recentCards.length > 0 ? (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                <div className='cartesrecentes' style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
                     {recentCards.map((card) => (
                         <div key={card.id} style={{ textAlign: 'center' }}>
                             <img

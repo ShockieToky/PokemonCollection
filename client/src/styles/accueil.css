@@ -95,15 +95,21 @@ body {
 }
 
 .cartes-bottom-row {
-    margin-top: 16px;
+    margin-top: 25px;
     width: 100%;
     display: flex;
     justify-content: center;
+    text-align: center;
+}
+
+.cartesrecentes {
+    margin-top: 50px;
 }
 
 .rechercheAccueil {
     grid-area: 1 / 5 / 9 / 7;
     background-color: #FFCCCC;
+    text-align: center;
 }
 
 .redirectionAccueil {

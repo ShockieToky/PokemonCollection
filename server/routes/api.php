@@ -70,3 +70,6 @@ Route::post('/cards/{id}/remove-from-wishlist', [CardController::class, 'removeF
 
 // Route for removing a card from the collection
 Route::post('/cards/{id}/remove-from-collection', [CardController::class, 'removeFromCollection']);
+
+// Route for fetching the stats of a specific set
+Route::get('/sets/{set}/stats', [SetController::class, 'stats']);
