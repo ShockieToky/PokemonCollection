@@ -16,11 +16,12 @@ const AffichageCartesCollection = ({ searchFilters }) => {
 
         axios.get(query)
             .then(response => {
-                setCollectionCards(response.data.data); // Assuming Laravel's pagination returns data in `data`
-                setTotalPages(response.data.last_page); // Assuming `last_page` is provided in the response
+                setCollectionCards(response.data.data || []); // fallback to empty array
+                setTotalPages(response.data.last_page || 1);
             })
             .catch(error => {
                 console.error('Error fetching collection cards:', error);
+                setCollectionCards([]); // also fallback on error
             });
     }, [currentPage, searchFilters]);
 
@@ -34,6 +35,36 @@ const AffichageCartesCollection = ({ searchFilters }) => {
         if (currentPage < totalPages) {
             setCurrentPage(currentPage + 1);
         }
+    };
+
+    const handleRemoveFromCollection = (cardId) => {
+        axios.post(`http://localhost:8000/api/cards/${cardId}/remove-from-collection`)
+            .then(() => {
+                if (window.confirm("Voulez-vous ajouter cette carte à la wishlist ?")) {
+                    axios.post(`http://localhost:8000/api/cards/${cardId}/add-to-wishlist`)
+                        .then(() => {
+                            // Optionally show a message
+                            // Refresh cards
+                            refreshCards();
+                        });
+                } else {
+                    // Refresh cards
+                    refreshCards();
+                }
+            });
+    };
+
+    const refreshCards = () => {
+        let query = `http://localhost:8000/api/cards/collection?page=${currentPage}`;
+        if (searchFilters.name) query += `&name=${searchFilters.name}`;
+        if (searchFilters.set) query += `&set=${searchFilters.set}`;
+        if (searchFilters.rarity) query += `&rarity=${searchFilters.rarity}`;
+        if (searchFilters.sort) query += `&sort=${searchFilters.sort}`;
+        axios.get(query)
+            .then(response => {
+                setCollectionCards(response.data.data || []);
+                setTotalPages(response.data.last_page || 1);
+            });
     };
 
     return (
@@ -50,6 +81,9 @@ const AffichageCartesCollection = ({ searchFilters }) => {
                                     style={{ width: '150px', height: 'auto', borderRadius: '8px' }}
                                 />
                                 <p>{card.name}</p>
+                                <button onClick={() => handleRemoveFromCollection(card.id)}>
+                                    Retirer de la collection
+                                </button>
                             </div>
                         ))}
                     </div>

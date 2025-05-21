@@ -16,7 +16,6 @@ const WishlistPage = () => {
 
     return (
         <div className='wishlist'>
-
             <div className='rechercheWishlist'>
                 <RechercheWishlist onSearchResults={setSearchFilters} />
                 <button onClick={() => navigate('/')}>

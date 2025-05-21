@@ -2,7 +2,7 @@ import CollectionPage from '../components/collectionPage';
 import '../styles/wishlist.css';
 
 const Collection = () => (
-    <div className='collection'>
+    <div>
         <CollectionPage />
     </div>
 );

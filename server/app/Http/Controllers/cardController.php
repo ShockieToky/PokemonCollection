@@ -199,9 +199,41 @@ class CardController extends Controller
         return response()->json(['total' => $total]);
     }
 
-    public function collectionCards(): \Illuminate\Http\JsonResponse
+    public function collectionCards(Request $request): \Illuminate\Http\JsonResponse
     {
-        $cards = Card::where('obtained', true)->get();
+        $query = Card::where('obtained', true);
+
+        if ($request->has('name') && $request->query('name') !== '') {
+            $query->where('name', 'like', '%' . $request->query('name') . '%');
+        }
+        if ($request->has('set') && $request->query('set') !== '') {
+            $query->where('set_id', $request->query('set'));
+        }
+        if ($request->has('rarity') && $request->query('rarity') !== '') {
+            $query->where('rarity', $request->query('rarity'));
+        }
+
+        // Sorting logic (optional)
+        if ($request->has('sort')) {
+            switch ($request->query('sort')) {
+                case 'name-asc':
+                    $query->orderBy('name', 'asc');
+                    break;
+                case 'set-asc':
+                    $query->join('sets', 'cards.set_id', '=', 'sets.id')
+                        ->orderBy('sets.releaseDate', 'asc')
+                        ->select('cards.*');
+                    break;
+                case 'set-desc':
+                    $query->join('sets', 'cards.set_id', '=', 'sets.id')
+                        ->orderBy('sets.releaseDate', 'desc')
+                        ->select('cards.*');
+                    break;
+            }
+        }
+
+        $cards = $query->paginate(18);
+
         return response()->json($cards);
     }
 
@@ -218,5 +250,15 @@ class CardController extends Controller
         $card->save();
 
         return response()->json(['message' => 'Card removed from wishlist']);
+    }
+
+    public function removeFromCollection(int $id): \Illuminate\Http\JsonResponse
+    {
+        $card = Card::findOrFail($id);
+        $card->obtained = false;
+        $card->obtained_at = null;
+        $card->save();
+
+        return response()->json(['message' => 'Card removed from collection']);
     }
 }
