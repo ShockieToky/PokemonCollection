@@ -178,4 +178,13 @@ class CardController extends Controller
         $total = Card::where('obtained', true)->count();
         return response()->json(['total' => $total]);
     }
+
+    public function removeFromWishlist(int $id): \Illuminate\Http\JsonResponse
+    {
+        $card = Card::findOrFail($id);
+        $card->wishlisted = false;
+        $card->save();
+
+        return response()->json(['message' => 'Card removed from wishlist']);
+    }
 }

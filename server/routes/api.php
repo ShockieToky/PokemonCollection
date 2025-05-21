@@ -64,3 +64,6 @@ Route::get('/cards/collection', [CardController::class, 'collectionCards']);
 
 // Route for counting the number of cards in the collection
 Route::get('/cards/collection/count', [CardController::class, 'collectionCardsCount']);
+
+// Route for removing a card from the wishlist
+Route::post('/cards/{id}/remove-from-wishlist', [CardController::class, 'removeFromWishlist']);
