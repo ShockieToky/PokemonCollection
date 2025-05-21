@@ -9,11 +9,21 @@ use Illuminate\Http\Request;
 class CardController extends Controller
 {
     // Controller pour gérer les cartes.
-    public function index(): JsonResponse
+    public function index(Request $request)
     {
-        $cards = Card::all();
+        $query = Card::query();
 
-        return response()->json($cards);
+        if ($request->has('set')) {
+            $query->where('set_id', $request->query('set'));
+        }
+        if ($request->has('name')) {
+            $query->where('name', $request->query('name'));
+        }
+        if ($request->has('rarity')) {
+            $query->where('rarity', $request->query('rarity'));
+        }
+
+        return response()->json($query->get());
     }
 
     // Ajoute une nouvelle carte

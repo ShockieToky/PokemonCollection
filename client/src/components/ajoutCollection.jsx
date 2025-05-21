@@ -3,37 +3,32 @@ import axios from 'axios';
 
 const AjoutCollection = () => {
     const [sets, setSets] = useState([]);
-    const [selectedSet, setSelectedSet] = useState('');
     const [pokemons, setPokemons] = useState([]);
-    const [selectedPokemon, setSelectedPokemon] = useState('');
     const [rarities, setRarities] = useState([]);
+
+    const [selectedSet, setSelectedSet] = useState('');
+    const [selectedPokemon, setSelectedPokemon] = useState('');
     const [selectedRarity, setSelectedRarity] = useState('');
     const [card, setCard] = useState(null);
     const [success, setSuccess] = useState('');
 
-    // Fetch all sets on mount
+    // Fetch sets on mount
     useEffect(() => {
         axios.get('http://localhost:8000/api/sets')
-            .then(res => setSets(res.data))
-            .catch(err => console.error(err));
+            .then(response => setSets(response.data))
+            .catch(error => console.error('Error fetching sets:', error));
     }, []);
 
-    // Fetch all pokemons for the selected set
+    // Fetch pokemons when set changes
     useEffect(() => {
         if (selectedSet) {
-            axios.get(`http://localhost:8000/api/cards`, {
-                params: { set: selectedSet }
-            })
-                .then(res => {
-                    // Get unique pokemon names
-                    const uniqueNames = [...new Set(res.data.map(card => card.name))];
-                    setPokemons(uniqueNames);
-                    setSelectedPokemon('');
-                    setRarities([]);
-                    setSelectedRarity('');
-                    setCard(null);
-                })
-                .catch(err => console.error(err));
+            setSelectedPokemon('');
+            setRarities([]);
+            setSelectedRarity('');
+            setCard(null);
+            axios.get(`http://localhost:8000/api/pokemons?set_id=${selectedSet}`)
+                .then(response => setPokemons(response.data))
+                .catch(error => console.error('Error fetching pokemons:', error));
         } else {
             setPokemons([]);
             setSelectedPokemon('');
@@ -43,19 +38,14 @@ const AjoutCollection = () => {
         }
     }, [selectedSet]);
 
-    // Fetch rarities for the selected pokemon in the set
+    // Fetch rarities when pokemon changes
     useEffect(() => {
         if (selectedSet && selectedPokemon) {
-            axios.get(`http://localhost:8000/api/cards`, {
-                params: { set: selectedSet, name: selectedPokemon }
-            })
-                .then(res => {
-                    const uniqueRarities = [...new Set(res.data.map(card => card.rarity))];
-                    setRarities(uniqueRarities);
-                    setSelectedRarity('');
-                    setCard(null);
-                })
-                .catch(err => console.error(err));
+            setSelectedRarity('');
+            setCard(null);
+            axios.get(`http://localhost:8000/api/rarities?set_id=${selectedSet}&pokemon=${selectedPokemon}`)
+                .then(response => setRarities(response.data))
+                .catch(error => console.error('Error fetching rarities:', error));
         } else {
             setRarities([]);
             setSelectedRarity('');
@@ -63,65 +53,104 @@ const AjoutCollection = () => {
         }
     }, [selectedSet, selectedPokemon]);
 
-    // Fetch the card for the selected set, pokemon, and rarity
+    // Fetch card when rarity changes
     useEffect(() => {
         if (selectedSet && selectedPokemon && selectedRarity) {
-            axios.get(`http://localhost:8000/api/cards`, {
+            axios.get('http://localhost:8000/api/cards', {
                 params: { set: selectedSet, name: selectedPokemon, rarity: selectedRarity }
             })
-                .then(res => {
-                    setCard(res.data[0] || null);
-                })
+                .then(res => setCard(res.data[0] || null))
                 .catch(err => console.error(err));
         } else {
             setCard(null);
         }
     }, [selectedSet, selectedPokemon, selectedRarity]);
 
-    // Handle marking the card as obtained
     const handleObtain = () => {
         if (card) {
             axios.post(`http://localhost:8000/api/cards/${card.id}/add-to-collection`)
-                .then(() => setSuccess('Carte ajoutée à la collection !'))
+                .then(() => {
+                    // Remove from wishlist after adding to collection
+                    axios.post(`http://localhost:8000/api/cards/${card.id}/remove-from-wishlist`)
+                        .then(() => setSuccess('Carte ajoutée à la collection et retirée de la wishlist !'))
+                        .catch(() => setSuccess('Carte ajoutée à la collection, mais erreur lors du retrait de la wishlist.'));
+                })
                 .catch(() => setSuccess('Erreur lors de l\'ajout.'));
+        }
+    };
+
+    const handleAddToWishlist = () => {
+        if (card) {
+            axios.post(`http://localhost:8000/api/cards/${card.id}/add-to-wishlist`)
+                .then(() => setSuccess('Carte ajoutée à la wishlist !'))
+                .catch(() => setSuccess('Erreur lors de l\'ajout à la wishlist.'));
         }
     };
 
     return (
         <div>
             <h2>Ajouter une carte à la collection</h2>
+
+            {/* Sélection du set */}
             <div>
-                <label>Set :</label>
-                <select value={selectedSet} onChange={e => setSelectedSet(e.target.value)}>
+                <label htmlFor="set">Set :</label>
+                <select
+                    id="set"
+                    value={selectedSet}
+                    onChange={e => setSelectedSet(e.target.value)}
+                >
                     <option value="">-- Choisir un set --</option>
                     {sets.map(set => (
                         <option key={set.id} value={set.id}>{set.name}</option>
                     ))}
                 </select>
             </div>
+
+            {/* Sélection du Pokémon (toujours affiché, désactivé si pas de set) */}
             <div>
-                <label>Pokémon :</label>
-                <select value={selectedPokemon} onChange={e => setSelectedPokemon(e.target.value)} disabled={!selectedSet}>
+                <label htmlFor="pokemon">Pokémon :</label>
+                <select
+                    id="pokemon"
+                    value={selectedPokemon}
+                    onChange={e => setSelectedPokemon(e.target.value)}
+                    disabled={!selectedSet}
+                >
                     <option value="">-- Choisir un Pokémon --</option>
-                    {pokemons.map(name => (
-                        <option key={name} value={name}>{name}</option>
+                    {pokemons.map(pokemon => (
+                        <option key={pokemon.name} value={pokemon.name}>
+                            {pokemon.name}
+                        </option>
                     ))}
                 </select>
             </div>
+
+            {/* Sélection de la rareté (toujours affiché, désactivé si pas de pokemon) */}
             <div>
-                <label>Rareté :</label>
-                <select value={selectedRarity} onChange={e => setSelectedRarity(e.target.value)} disabled={!selectedPokemon}>
+                <label htmlFor="rarity">Rareté :</label>
+                <select
+                    id="rarity"
+                    value={selectedRarity}
+                    onChange={e => setSelectedRarity(e.target.value)}
+                    disabled={!selectedPokemon}
+                >
                     <option value="">-- Choisir une rareté --</option>
                     {rarities.map(rarity => (
-                        <option key={rarity} value={rarity}>{rarity}</option>
+                        <option key={rarity} value={rarity}>
+                            {rarity}
+                        </option>
                     ))}
                 </select>
             </div>
+
+            {/* Affichage de la carte et boutons d'ajout */}
             {card && (
                 <div style={{ marginTop: '20px', textAlign: 'center' }}>
                     <img src={card.images_large} alt={card.name} style={{ width: '200px', borderRadius: '8px' }} />
                     <p>{card.name} - {card.rarity}</p>
                     <button onClick={handleObtain}>Ajouter à la collection</button>
+                    <button onClick={handleAddToWishlist} style={{ marginLeft: '10px' }}>
+                        Ajouter à la wishlist
+                    </button>
                 </div>
             )}
             {success && <p>{success}</p>}

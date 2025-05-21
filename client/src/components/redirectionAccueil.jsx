@@ -9,8 +9,8 @@ const RedirectionAccueil = () => {
             <h1>Redirections</h1>
             <button onClick={() => navigate('/wishlist')}>Voir la Wishlist</button>
             <button onClick={() => navigate('/collection')}>Collection</button>
+            <button onClick={() => navigate('/ajoutcarte')}>Ajouter une Carte</button>
             <button onClick={() => navigate('/tous-les-pokemons')}>Tous les Pokémons</button>
-            <button onClick={() => navigate('/ajouter-une-carte')}>Ajouter une Carte</button>
             <button onClick={() => navigate('/tous-les-sets')}>Tous les Sets</button>
         </div>
     );

@@ -66,6 +66,5 @@ body {
     grid-area: 1 / 2 / 6 / 6;
     background-color: rgb(191, 84, 8);
     font-size: 18px;
-    justify-items: center;
-    align-items: flex-start;
+    text-align: center;
 }
