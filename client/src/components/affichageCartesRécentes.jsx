@@ -27,7 +27,6 @@ const AffichageCartesRécentes = () => {
                                 alt={card.name}
                                 style={{ width: '150px', height: 'auto', borderRadius: '8px' }}
                             />
-                            <p>{card.name}</p>
                         </div>
                     ))}
                 </div>

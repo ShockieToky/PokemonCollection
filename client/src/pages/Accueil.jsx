@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import RedirectionAccueil from '../components/redirectionAccueil';
 import AffichageSetComplet from '../components/affichageSetComplet';
 import AffichageNombresCartes from '../components/affichageNombresCartes';
@@ -8,6 +8,12 @@ import AffichageRecherche from '../components/affichageRecherche';
 import '../styles/accueil.css';
 
 const Accueil = () => {
+    const [searchFilters, setSearchFilters] = useState({
+        set: null,
+        pokemon: null,
+        rarity: '',
+    });
+
     return (
         <div className='accueil'>
             <div className='affichageCartes'>
@@ -21,8 +27,8 @@ const Accueil = () => {
             </div>
             <div className='rechercheAccueil'>
                 <h1>Recherche de cartes :</h1>
-                <AffichageRecherche />
-                <RechercheAccueil />
+                <AffichageRecherche searchFilters={searchFilters} />
+                <RechercheAccueil onSearchFiltersChange={setSearchFilters} />
             </div>
             <div className='redirectionAccueil'>
                 <RedirectionAccueil />

@@ -55,3 +55,12 @@ Route::get('/cards/wishlist', [CardController::class, 'getWishlistCards']);
 
 // Route for searching cards in the wishlist
 Route::get('/cards/wishlist/search', [CardController::class, 'searchWishlist']);
+
+// Route for fetching all cards
+Route::get('/cards/total', [CardController::class, 'totalCards']);
+
+// Route for fetching all cards in the collection
+Route::get('/cards/collection', [CardController::class, 'collectionCards']);
+
+// Route for counting the number of cards in the collection
+Route::get('/cards/collection/count', [CardController::class, 'collectionCardsCount']);

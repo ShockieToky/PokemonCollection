@@ -10,3 +10,5 @@ const AjoutCarte = () => {
         </div>
     );
 }
+
+export default AjoutCarte;

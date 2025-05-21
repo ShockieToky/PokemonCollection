@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const RechercheAccueil = () => {
+const RechercheAccueil = ({ onSearchFiltersChange }) => {
     const [sets, setSets] = useState([]);
     const [pokemons, setPokemons] = useState([]);
     const [rarities, setRarities] = useState([]);
 
     const [selectedSet, setSelectedSet] = useState(null);
     const [selectedPokemon, setSelectedPokemon] = useState(null);
+    const [selectedRarity, setSelectedRarity] = useState('');
 
     useEffect(() => {
         // Récupération des sets
@@ -19,6 +20,15 @@ const RechercheAccueil = () => {
                 console.error('Error fetching sets:', error);
             });
     }, []);
+
+    // Notify parent when filters change
+    useEffect(() => {
+        onSearchFiltersChange({
+            set: selectedSet,
+            pokemon: selectedPokemon,
+            rarity: selectedRarity,
+        });
+    }, [selectedSet, selectedPokemon, selectedRarity, onSearchFiltersChange]);
 
     const handleSetChange = (setId) => {
         setSelectedSet(setId);
@@ -46,6 +56,10 @@ const RechercheAccueil = () => {
             .catch(error => {
                 console.error('Error fetching rarities:', error);
             });
+    };
+
+    const handleRarityChange = (rarity) => {
+        setSelectedRarity(rarity);
     };
 
     return (
@@ -92,7 +106,11 @@ const RechercheAccueil = () => {
             {selectedPokemon && (
                 <div>
                     <label htmlFor="rarity">Rareté:</label>
-                    <select id="rarity">
+                    <select
+                        id="rarity"
+                        value={selectedRarity}
+                        onChange={e => handleRarityChange(e.target.value)}
+                    >
                         <option value="">-- Choisir une rareté --</option>
                         {rarities.map((rarity) => (
                             <option key={rarity} value={rarity}>

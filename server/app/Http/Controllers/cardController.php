@@ -71,24 +71,17 @@ class CardController extends Controller
     }
 
     // Affiche le nombre total de cartes
-    public function totalCards(): JsonResponse
-    {
-        $total = Card::count();
-
-        return response()->json([
-            'total' => $total,
-        ]);
-    }
+    // (Méthode supprimée car elle était en double)
 
     // Affiche les 6 cartes les plus récentes
-    public function recentCards(): JsonResponse
+    public function recentCards(): \Illuminate\Http\JsonResponse
     {
-        $recentCards = Card::whereNotNull('obtained_at')
-            ->orderBy('obtained_at', 'desc')
-            ->take(6)
+        $cards = \App\Models\Card::where('obtained', true)
+            ->orderByDesc('obtained_at')
+            ->limit(6)
             ->get();
 
-        return response()->json($recentCards);
+        return response()->json($cards);
     }
 
     // Recherche des cartes par différents critères
@@ -166,5 +159,23 @@ class CardController extends Controller
         $rarities = Card::select('rarity')->distinct()->pluck('rarity');
 
         return response()->json($rarities);
+    }
+
+    public function totalCards(): JsonResponse
+    {
+        $total = \App\Models\Card::count();
+        return response()->json(['total' => $total]);
+    }
+
+    public function collectionCards(): \Illuminate\Http\JsonResponse
+    {
+        $cards = Card::where('obtained', true)->get();
+        return response()->json($cards);
+    }
+
+    public function collectionCardsCount(): \Illuminate\Http\JsonResponse
+    {
+        $total = Card::where('obtained', true)->count();
+        return response()->json(['total' => $total]);
     }
 }

@@ -6,8 +6,7 @@ const AffichageNombresCartes = () => {
     const [totalCards, setTotalCards] = useState(null);
 
     useEffect(() => {
-        // Fetch the total number of cards from the Laravel backend
-        axios.get('http://localhost:8000/api/cards/total')
+        axios.get('http://localhost:8000/api/cards/collection/count')
             .then(response => {
                 setTotalCards(response.data.total);
             })
@@ -22,7 +21,7 @@ const AffichageNombresCartes = () => {
             {totalCards !== null ? (
                 <p className='total-cartes'>{totalCards} cartes</p>
             ) : (
-                <p>Chargement...</p>
+                <p>0 cartes</p>
             )}
         </div>
     );

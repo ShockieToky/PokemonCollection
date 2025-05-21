@@ -6,8 +6,7 @@ const AffichageSetComplet = () => {
     const [set, setSet] = useState(null);
 
     useEffect(() => {
-        // Récupération du set le plus complet depuis l'API
-        axios.get('')
+        axios.get('http://localhost:8000/api/sets/most-complete')
             .then(response => {
                 setSet(response.data);
             })
@@ -21,7 +20,10 @@ const AffichageSetComplet = () => {
             <h1 className='titre-setcomplet'>Set le plus complet:</h1>
             {set ? (
                 <p className='set-complet-info'>
-                    {set.name} - {set.total} cartes
+                    {set.name} <br />
+                    {set.obtained_cards} / {set.total_cards} cartes obtenues<br />
+                    {set.completion}% complété<br />
+                    {set.remaining} cartes restantes
                 </p>
             ) : (
                 <p>Chargement...</p>
