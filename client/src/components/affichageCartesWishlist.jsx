@@ -5,6 +5,7 @@ const AffichageCartesWishlist = ({ searchFilters }) => {
     const [wishlistCards, setWishlistCards] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+    const [successMsg, setSuccessMsg] = useState('');
 
     useEffect(() => {
         // Fetch wishlist cards with pagination and search filters
@@ -35,6 +36,31 @@ const AffichageCartesWishlist = ({ searchFilters }) => {
         }
     };
 
+    const handleAddToCollection = (cardId) => {
+        axios.post(`http://localhost:8000/api/cards/${cardId}/add-to-collection`)
+            .then(() => {
+                setSuccessMsg('Carte ajoutée à la collection !');
+                // Remove wishlisted status if present
+                axios.post(`http://localhost:8000/api/cards/${cardId}/remove-from-wishlist`)
+                    .then(() => {
+                        // Refresh the wishlist
+                        let query = `http://localhost:8000/api/cards/wishlist?page=${currentPage}`;
+                        if (searchFilters.name) query += `&name=${searchFilters.name}`;
+                        if (searchFilters.set) query += `&set=${searchFilters.set}`;
+                        if (searchFilters.rarity) query += `&rarity=${searchFilters.rarity}`;
+                        axios.get(query)
+                            .then(response => {
+                                setWishlistCards(response.data.data);
+                                setTotalPages(response.data.last_page);
+                            });
+                    })
+                    .catch(() => {
+                        // Optionally handle error silently
+                    });
+            })
+            .catch(() => setSuccessMsg('Erreur lors de l\'ajout à la collection.'));
+    };
+
     return (
         <div>
             <h1>Cartes dans la Wishlist :</h1>
@@ -48,7 +74,11 @@ const AffichageCartesWishlist = ({ searchFilters }) => {
                                     alt={card.name}
                                     style={{ width: '150px', height: 'auto', borderRadius: '8px' }}
                                 />
-                                <p>{card.name}</p>
+                                <div style={{ marginTop: '8px' }}>
+                                    <button onClick={() => handleAddToCollection(card.id)}>
+                                        Mettre comme obtenue
+                                    </button>
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -70,6 +100,7 @@ const AffichageCartesWishlist = ({ searchFilters }) => {
                             Suivant
                         </button>
                     </div>
+                    {successMsg && <p style={{ color: 'green' }}>{successMsg}</p>}
                 </div>
             ) : (
                 <p>Aucune carte trouvée.</p>

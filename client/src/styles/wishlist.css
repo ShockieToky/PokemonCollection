@@ -1,17 +1,73 @@
+/* Responsive for tablets */
+@media (max-width: 1024px) {
+    .wishlist {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto auto;
+    }
+
+    .affichageCartesW {
+        grid-area: 1 / 1 / 2 / 3;
+    }
+
+    .rechercheWishlist {
+        grid-area: 2 / 1 / 3 / 3;
+    }
+}
+
+/* Responsive for mobile */
+@media (max-width: 600px) {
+    .wishlist {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
+    }
+
+    .affichageCartesW,
+    .rechercheWishlist {
+        grid-area: auto / auto / auto / auto;
+    }
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
 .wishlist {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    grid-template-rows: repeat(8, 1fr);
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
     grid-column-gap: 0px;
     grid-row-gap: 0px;
 }
 
 .rechercheWishlist {
-    grid-area: 1 / 1 / 9 / 3;
-    background-color: #666666;
+    grid-area: 1 / 1 / 6 / 2;
+    background-color: grey;
+    font-size: 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.rechercheWishlist label {
+    margin-bottom: 4px;
+    font-weight: bold;
+}
+
+.rechercheWishlist select,
+.rechercheWishlist input {
+    margin-bottom: 16px;
 }
 
 .affichageCartesW {
-    grid-area: 1 / 3 / 9 / 7;
-    background-color: #663333;
+    grid-area: 1 / 2 / 6 / 6;
+    background-color: rgb(191, 84, 8);
+    font-size: 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
 }

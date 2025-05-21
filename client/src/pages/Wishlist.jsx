@@ -2,7 +2,7 @@ import WishlistPage from '../components/wishlistPage';
 import '../styles/wishlist.css';
 
 const Wishlist = () => (
-    <div className='wishlist'>
+    <div>
         <WishlistPage />
     </div>
 );

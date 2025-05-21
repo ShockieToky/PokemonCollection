@@ -127,8 +127,40 @@ class CardController extends Controller
 
     public function getWishlistCards(Request $request): JsonResponse
     {
-        $cards = Card::where('wishlisted', true)
-            ->paginate(18); // 18 cards per page
+        $query = Card::where('wishlisted', true);
+
+        if ($request->has('name') && $request->query('name') !== '') {
+            $query->where('name', 'like', '%' . $request->query('name') . '%');
+        }
+        if ($request->has('set') && $request->query('set') !== '') {
+            $query->where('set_id', $request->query('set'));
+        }
+        if ($request->has('rarity') && $request->query('rarity') !== '') {
+            $query->where('rarity', $request->query('rarity'));
+        }
+
+        // Sorting logic
+        if ($request->has('sort')) {
+            switch ($request->query('sort')) {
+                case 'name-asc':
+                    $query->orderBy('name', 'asc');
+                    break;
+                case 'set-asc':
+                    // Join with sets table to sort by set releaseDate ascending
+                    $query->join('sets', 'cards.set_id', '=', 'sets.id')
+                        ->orderBy('sets.releaseDate', 'asc')
+                        ->select('cards.*');
+                    break;
+                case 'set-desc':
+                    // Join with sets table to sort by set releaseDate descending
+                    $query->join('sets', 'cards.set_id', '=', 'sets.id')
+                        ->orderBy('sets.releaseDate', 'desc')
+                        ->select('cards.*');
+                    break;
+            }
+        }
+
+        $cards = $query->paginate(18);
 
         return response()->json($cards);
     }

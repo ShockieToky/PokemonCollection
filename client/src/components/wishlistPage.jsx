@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import RechercheWishlist from '../components/rechercheWishlist';
 import AffichageCartesWishlist from '../components/affichageCartesWishlist';
+import '../styles/wishlist.css';
 
 const WishlistPage = () => {
     const [searchFilters, setSearchFilters] = useState({
@@ -10,10 +12,20 @@ const WishlistPage = () => {
         sort: '',
     });
 
+    const navigate = useNavigate();
+
     return (
-        <div>
-            <RechercheWishlist onSearchResults={setSearchFilters} />
-            <AffichageCartesWishlist searchFilters={searchFilters} />
+        <div className='wishlist'>
+
+            <div className='rechercheWishlist'>
+                <RechercheWishlist onSearchResults={setSearchFilters} />
+                <button onClick={() => navigate('/')}>
+                    Retour à l'accueil
+                </button>
+            </div>
+            <div className='affichageCartesW'>
+                <AffichageCartesWishlist searchFilters={searchFilters} />
+            </div>
         </div>
     );
 };
