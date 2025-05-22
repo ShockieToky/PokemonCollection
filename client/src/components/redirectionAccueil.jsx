@@ -6,12 +6,14 @@ const RedirectionAccueil = () => {
 
     return (
         <div>
-            <h1>Redirections</h1>
-            <button onClick={() => navigate('/wishlist')}>Voir la Wishlist</button>
-            <button onClick={() => navigate('/collection')}>Collection</button>
-            <button onClick={() => navigate('/ajoutcarte')}>Ajouter une Carte</button>
-            <button onClick={() => navigate('/tous-les-pokemons')}>Tous les Pokémons</button>
-            <button onClick={() => navigate('/set')}>Tous les Sets</button>
+            <h1 className='titre-redirection'>Redirections</h1>
+            <div className='les-boutons'>
+                <button className='bouton-redirection' onClick={() => navigate('/wishlist')}>Voir la Wishlist</button>
+                <button className='bouton-redirection' onClick={() => navigate('/collection')}>Collection</button>
+                <button className='bouton-redirection' onClick={() => navigate('/ajoutcarte')}>Ajouter une Carte</button>
+                <button className='bouton-redirection' onClick={() => navigate('/set')}>Tous les Sets</button>
+            </div>
+            <a href='https://github.com/ShockieToky/PokemonCollection' target='_blank'>Site fait par Aymerick</a>
         </div>
     );
 };

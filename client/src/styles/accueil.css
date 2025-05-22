@@ -1,4 +1,4 @@
-/* Responsive for tablets */
+/* Responsive pour les tablettes */
 @media (max-width: 1024px) {
     .accueil {
         grid-template-columns: 1fr 1fr;
@@ -18,7 +18,7 @@
     }
 }
 
-/* Responsive for mobile */
+/* Responsive pour les téléphones */
 @media (max-width: 600px) {
     .accueil {
         grid-template-columns: 1fr;
@@ -32,6 +32,7 @@
     }
 }
 
+
 html,
 body {
     height: 100%;
@@ -39,6 +40,7 @@ body {
     padding: 0;
 }
 
+/* Grid pour l'acceuil */
 .accueil {
     min-height: 100vh;
     min-width: 100vw;
@@ -51,6 +53,9 @@ body {
     grid-row-gap: 0px;
 }
 
+/* Partie pour le bloc affichage des cartes et stats */
+
+/* Div entière */
 .affichageCartes {
     grid-area: 1 / 1 / 7 / 5;
     background-color: #d3a10a;
@@ -62,6 +67,7 @@ body {
     padding: 16px;
 }
 
+/* Partie du haut (nombres de cartes et set le plus complet */
 .cartes-top-row {
     display: flex;
     flex-direction: row;
@@ -70,30 +76,45 @@ body {
     justify-content: space-around;
 }
 
+/* Bloc nombre de cartes */
 .nombres-cartes {
     text-align: center;
-    border: 5px groove #000000;
     border-radius: 10px;
 }
 
 .titre-nbcartes {
     text-align: center;
-    font-size: 30px;
-    font-weight: bold;
-    margin-bottom: 16px;
+    font-size: 28px;
 }
 
+.total-cartes {
+    font-size: 25px;
+    color: #1539c7;
+}
+
+/* Bloc du set le plus complet */
 .set-complet {
     text-align: center;
+    outline: 5px ridge #858888;
+    outline-offset: 5px;
+    border-radius: 10px;
+    margin-top: 10px;
 }
 
 .titre-setcomplet {
     text-align: center;
     font-size: 25px;
     font-weight: bold;
-    margin-bottom: 16px;
 }
 
+.set-complet-info {
+    font-size: 15px;
+    font-weight: bold;
+    color: #8219d7;
+    margin-bottom: 5px;
+}
+
+/* Partie du bas (carte récemment obtenues) */
 .cartes-bottom-row {
     margin-top: 25px;
     width: 100%;
@@ -102,17 +123,43 @@ body {
     text-align: center;
 }
 
+/* Partie des cartes les plus récentes */
 .cartesrecentes {
     margin-top: 50px;
 }
 
+/* Partie de la recherche */
 .rechercheAccueil {
     grid-area: 1 / 5 / 9 / 7;
-    background-color: #FFCCCC;
+    background-color: #e69595;
     text-align: center;
 }
 
+/* Partie de la redirection */
 .redirectionAccueil {
     grid-area: 7 / 1 / 9 / 5;
-    background-color: #68625d;
+    background-color: #d7890d;
+    text-align: center;
+}
+
+.titre-redirection {
+    font-size: 30px;
+    font-weight: bold;
+    padding-bottom: 10px;
+}
+
+.les-boutons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    gap: 10px;
+}
+
+.bouton-redirection {
+    font-size: 30px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding-bottom: 25px;
 }

@@ -16,8 +16,6 @@ function App() {
         <Route path="/collection" element={<Collection />} />
         <Route path="/ajoutcarte" element={<AjoutCarte />} />
         <Route path="/set" element={<SetPage />} />
-        {/* <Route path="/tous-les-pokemons" element={<TousLesPokemons />} /> */}
-
       </Routes>
     </Router>
   );

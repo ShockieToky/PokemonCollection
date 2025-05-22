@@ -26,7 +26,6 @@ const Accueil = () => {
                 </div>
             </div>
             <div className='rechercheAccueil'>
-                <h1>Recherche de cartes :</h1>
                 <AffichageRecherche searchFilters={searchFilters} />
                 <RechercheAccueil onSearchFiltersChange={setSearchFilters} />
             </div>
