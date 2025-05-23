@@ -135,6 +135,31 @@ body {
     text-align: center;
 }
 
+label {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+select {
+    display: block;
+    font-size: 15px;
+    margin-bottom: 16px;
+    text-align: center;
+    margin: 0 auto 16px auto;
+    border: none;
+
+}
+
+.bouton-recherche {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+}
+
 /* Partie de la redirection */
 .redirectionAccueil {
     grid-area: 7 / 1 / 9 / 5;

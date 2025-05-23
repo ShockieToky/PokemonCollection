@@ -64,8 +64,6 @@ const RechercheAccueil = ({ onSearchFiltersChange }) => {
 
     return (
         <div>
-            <h1>Recherche</h1>
-
             {/* Sélection du set */}
             <div>
                 <label htmlFor="set">Set:</label>

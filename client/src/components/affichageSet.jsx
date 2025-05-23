@@ -10,7 +10,7 @@ const AffichageSet = ({ setId }) => {
         if (setId) {
             axios.get(`http://localhost:8000/api/cards?set=${setId}&page=${currentPage}`)
                 .then(res => {
-                    setCards(res.data.data || []);
+                    setCards(res.data.data || res.data || []);
                     setTotalPages(res.data.last_page || 1);
                 })
                 .catch(() => {
@@ -21,17 +21,36 @@ const AffichageSet = ({ setId }) => {
     }, [setId, currentPage]);
 
     const handleAddToCollection = (cardId) => {
-        axios.post(`http://localhost:8000/api/cards/${cardId}/add-to-collection`);
+        axios.post(`http://localhost:8000/api/cards/${cardId}/add-to-collection`).then(() => {
+            // Remove from wishlist as well
+            axios.post(`http://localhost:8000/api/cards/${cardId}/remove-from-wishlist`).finally(() => {
+                setCards(cards =>
+                    cards.map(card =>
+                        card.id === cardId
+                            ? { ...card, obtained: true, wishlisted: false }
+                            : card
+                    )
+                );
+            });
+        });
     };
 
     const handleAddToWishlist = (cardId) => {
-        axios.post(`http://localhost:8000/api/cards/${cardId}/add-to-wishlist`);
+        axios.post(`http://localhost:8000/api/cards/${cardId}/add-to-wishlist`).then(() => {
+            setCards(cards =>
+                cards.map(card =>
+                    card.id === cardId
+                        ? { ...card, wishlisted: true }
+                        : card
+                )
+            );
+        });
     };
 
     if (!setId) {
         return <div><p>Sélectionnez un set pour voir les cartes.</p></div>;
     }
-    console.log(cards);
+
     return (
         <div>
             <h3>Cartes du set</h3>
@@ -43,14 +62,30 @@ const AffichageSet = ({ setId }) => {
             }}>
                 {cards.map(card => (
                     <div key={card.id} style={{ textAlign: 'center', background: '#fff', borderRadius: '8px', padding: '10px' }}>
-                        <img src={card.images?.large} alt={card.name} style={{ width: '120px', borderRadius: '6px' }} />
+                        <img
+                            src={card.images?.large || card.images_large || card.image_url || 'https://via.placeholder.com/120x170?text=No+Image'}
+                            alt={card.name}
+                            style={{ width: '120px', borderRadius: '6px' }}
+                        />
                         <p>{card.name}</p>
-                        <button onClick={() => handleAddToCollection(card.id)} style={{ marginRight: '8px' }}>
-                            Ajouter à la collection
-                        </button>
-                        <button onClick={() => handleAddToWishlist(card.id)}>
-                            Ajouter à la wishlist
-                        </button>
+                        {card.obtained ? (
+                            <p style={{ color: 'green', fontWeight: 'bold' }}>déjà dans la collection</p>
+                        ) : (
+                            <>
+                                <button onClick={() => handleAddToCollection(card.id)} style={{ marginRight: '8px' }}>
+                                    Ajouter à la collection
+                                </button>
+                                {card.wishlisted ? (
+                                    <button disabled style={{ background: '#ccc', color: '#666' }}>
+                                        déjà dans la wishlist
+                                    </button>
+                                ) : (
+                                    <button onClick={() => handleAddToWishlist(card.id)}>
+                                        Ajouter à la wishlist
+                                    </button>
+                                )}
+                            </>
+                        )}
                     </div>
                 ))}
             </div>

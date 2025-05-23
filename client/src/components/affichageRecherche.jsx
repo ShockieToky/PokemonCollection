@@ -59,7 +59,7 @@ const AffichageRecherche = ({ searchFilters }) => {
 
     return (
         <div>
-            <h1>Résultats de la recherche:</h1>
+            <h1>Recherche</h1>
             {cards.length > 0 ? (
                 <div style={{ textAlign: 'center', marginBottom: '20px' }}>
                     <img
@@ -68,12 +68,26 @@ const AffichageRecherche = ({ searchFilters }) => {
                         style={{ width: '250px', height: 'auto', borderRadius: '8px' }}
                     />
                     <div style={{ marginTop: '10px' }}>
-                        <button onClick={() => handleAddToCollection(cards[currentIndex].id)} style={{ marginRight: '10px' }}>
-                            Ajouter à la collection
-                        </button>
-                        <button onClick={() => handleAddToWishlist(cards[currentIndex].id)}>
-                            Ajouter à la wishlist
-                        </button>
+                        {cards[currentIndex].obtained ? (
+                            <p style={{ color: 'green', fontWeight: 'bold' }}>déjà dans la collection</p>
+                        ) : (
+                            <>
+                                <button
+                                    className='bouton-recherche'
+                                    onClick={() => handleAddToCollection(cards[currentIndex].id)}
+                                    style={{ marginRight: '10px' }}
+                                >
+                                    ✅ collection
+                                </button>
+                                <button
+                                    className='bouton-recherche'
+                                    onClick={() => handleAddToWishlist(cards[currentIndex].id)}
+                                    disabled={cards[currentIndex].wishlisted}
+                                >
+                                    {cards[currentIndex].wishlisted ? 'déjà dans la wishlist' : '❤ wishlist'}
+                                </button>
+                            </>
+                        )}
                     </div>
                     {cards.length > 1 && (
                         <div style={{ marginTop: '15px' }}>
@@ -82,7 +96,7 @@ const AffichageRecherche = ({ searchFilters }) => {
                             <button onClick={handleNext} style={{ marginLeft: '10px' }}>{'→'}</button>
                         </div>
                     )}
-                    {successMsg && <p style={{ color: 'green' }}>{successMsg}</p>}
+                    {successMsg && <p style={{ color: 'green', fontWeight: 'bold' }}>{successMsg}</p>}
                 </div>
             ) : (
                 <p>Aucune carte trouvée.</p>
