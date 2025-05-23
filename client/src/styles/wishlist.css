@@ -35,6 +35,10 @@ body {
 }
 
 .wishlist {
+    min-height: 100vh;
+    min-width: 100vw;
+    height: 100vh;
+    width: 100vw;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     grid-template-rows: repeat(5, 1fr);
@@ -46,20 +50,20 @@ body {
     grid-area: 1 / 1 / 6 / 2;
     background-color: grey;
     font-size: 18px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
     align-items: center;
+    text-align: center;
 }
 
 .rechercheWishlist label {
     margin-bottom: 4px;
     font-weight: bold;
+    text-align: center;
+    margin: 0 auto 16px auto;
 }
 
 .rechercheWishlist select,
 .rechercheWishlist input {
-    margin-bottom: 16px;
+    text-align: center;
 }
 
 .affichageCartesW {
@@ -70,4 +74,17 @@ body {
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
+    padding: 16px;
+}
+
+.affichage-cartes-wishlist-card {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    margin-left: 15px;
+}
+
+.bouton-wishlist {
+    background: none;
+    border: none;
+    cursor: pointer;
 }

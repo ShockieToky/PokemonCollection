@@ -41,7 +41,7 @@ const RechercheWishlist = ({ onSearchResults }) => {
 
     return (
         <div>
-            <h2>Recherche dans la Wishlist</h2>
+            <h2>Recherche</h2>
             <div>
                 <label>Nom du Pokémon:</label>
                 <input

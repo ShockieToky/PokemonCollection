@@ -13,6 +13,7 @@ const AffichageCartesWishlist = ({ searchFilters }) => {
         if (searchFilters.name) query += `&name=${searchFilters.name}`;
         if (searchFilters.set) query += `&set=${searchFilters.set}`;
         if (searchFilters.rarity) query += `&rarity=${searchFilters.rarity}`;
+        if (searchFilters.sort) query += `&sort=${searchFilters.sort}`;
 
         axios.get(query)
             .then(response => {
@@ -61,22 +62,42 @@ const AffichageCartesWishlist = ({ searchFilters }) => {
             .catch(() => setSuccessMsg('Erreur lors de l\'ajout à la collection.'));
     };
 
+    const handleRemoveFromWishlist = (cardId) => {
+        axios.post(`http://localhost:8000/api/cards/${cardId}/remove-from-wishlist`)
+            .then(() => {
+                setSuccessMsg('Carte retirée de la wishlist !');
+                // Refresh the wishlist
+                let query = `http://localhost:8000/api/cards/wishlist?page=${currentPage}`;
+                if (searchFilters.name) query += `&name=${searchFilters.name}`;
+                if (searchFilters.set) query += `&set=${searchFilters.set}`;
+                if (searchFilters.rarity) query += `&rarity=${searchFilters.rarity}`;
+                axios.get(query)
+                    .then(response => {
+                        setWishlistCards(response.data.data);
+                        setTotalPages(response.data.last_page);
+                    });
+            })
+            .catch(() => setSuccessMsg('Erreur lors du retrait de la wishlist.'));
+    };
+
     return (
         <div>
-            <h1>Cartes dans la Wishlist :</h1>
             {wishlistCards.length > 0 ? (
                 <div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
                         {wishlistCards.map((card) => (
-                            <div key={card.id} style={{ textAlign: 'center' }}>
+                            <div key={card.id} className="affichage-cartes-wishlist-card" style={{ textAlign: 'center' }}>
                                 <img
                                     src={card.images_large}
                                     alt={card.name}
                                     style={{ width: '150px', height: 'auto', borderRadius: '8px' }}
                                 />
                                 <div style={{ marginTop: '8px' }}>
-                                    <button onClick={() => handleAddToCollection(card.id)}>
-                                        Mettre comme obtenue
+                                    <button className='bouton-wishlist' onClick={() => handleAddToCollection(card.id)} style={{ marginRight: '8px' }}>
+                                        ✅ collection
+                                    </button>
+                                    <button className='bouton-wishlist' onClick={() => handleRemoveFromWishlist(card.id)}>
+                                        ❌ wishlist
                                     </button>
                                 </div>
                             </div>

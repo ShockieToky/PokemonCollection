@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import '../styles/set.css';
 
 const InfoSet = ({ onSearchResults }) => {
     const [sets, setSets] = useState([]);

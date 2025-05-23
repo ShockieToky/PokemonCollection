@@ -170,7 +170,7 @@ class CardController extends Controller
             }
         }
 
-        $cards = $query->paginate(18);
+        $cards = $query->paginate(21);
 
         return response()->json($cards);
     }
@@ -270,5 +270,24 @@ class CardController extends Controller
         $card->save();
 
         return response()->json(['message' => 'Card removed from collection']);
+    }
+
+    public function getRaritiesForSetAndPokemon(\Illuminate\Http\Request $request)
+    {
+        $setId = $request->query('set_id');
+        $pokemon = $request->query('pokemon');
+
+        $query = \App\Models\Card::query();
+
+        if ($setId) {
+            $query->where('set_id', $setId);
+        }
+        if ($pokemon) {
+            $query->where('name', $pokemon);
+        }
+
+        $rarities = $query->distinct()->pluck('rarity')->filter()->values();
+
+        return response()->json($rarities);
     }
 }
