@@ -74,15 +74,15 @@ const AffichageCartesCollection = ({ searchFilters }) => {
                 <div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
                         {collectionCards.map((card) => (
-                            <div key={card.id} style={{ textAlign: 'center' }}>
+                            <div className="affichage-cartes-collection-card" key={card.id} style={{ textAlign: 'center' }}>
                                 <img
                                     src={card.images_large}
                                     alt={card.name}
                                     style={{ width: '150px', height: 'auto', borderRadius: '8px' }}
                                 />
                                 <p>{card.name}</p>
-                                <button onClick={() => handleRemoveFromCollection(card.id)}>
-                                    Retirer de la collection
+                                <button className='bouton-collection' onClick={() => handleRemoveFromCollection(card.id)}>
+                                    ❌ collection
                                 </button>
                             </div>
                         ))}

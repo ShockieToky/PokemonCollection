@@ -242,7 +242,7 @@ class CardController extends Controller
             }
         }
 
-        $cards = $query->paginate(18);
+        $cards = $query->paginate(16);
 
         return response()->json($cards);
     }
