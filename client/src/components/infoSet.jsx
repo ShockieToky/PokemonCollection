@@ -9,6 +9,8 @@ const InfoSet = ({ onSearchResults }) => {
     const [setStats, setSetStats] = useState(null);
     const [wishlistCount, setWishlistCount] = useState(0);
     const [rarityStats, setRarityStats] = useState([]);
+    const [globalStats, setGlobalStats] = useState(null);
+    const [globalRarityStats, setGlobalRarityStats] = useState([]);
 
     // Fetch all sets on mount
     useEffect(() => {
@@ -16,6 +18,19 @@ const InfoSet = ({ onSearchResults }) => {
             .then(response => setSets(response.data))
             .catch(error => console.error('Error fetching sets:', error));
     }, []);
+
+    // Fetch global stats when no set is selected
+    useEffect(() => {
+        if (!selectedSet) {
+            axios.get('http://localhost:8000/api/cards/global-stats')
+                .then(response => setGlobalStats(response.data))
+                .catch(() => setGlobalStats(null));
+
+            axios.get('http://localhost:8000/api/cards/global-obtained-by-rarity')
+                .then(response => setGlobalRarityStats(response.data || []))
+                .catch(() => setGlobalRarityStats([]));
+        }
+    }, [selectedSet]);
 
     // Update logo and fetch stats when set is selected
     useEffect(() => {
@@ -51,7 +66,7 @@ const InfoSet = ({ onSearchResults }) => {
 
     return (
         <div>
-            <h2>Informations sur un Set</h2>
+            <h2>Informations des sets</h2>
             <div>
                 <label htmlFor="set-select">Choisir un set :</label>
                 <select
@@ -67,6 +82,43 @@ const InfoSet = ({ onSearchResults }) => {
                     ))}
                 </select>
             </div>
+            {/* Global stats if no set selected */}
+            {!selectedSet && globalStats && (
+                <div style={{ marginTop: '20px' }}>
+                    <p>
+                        % de cartes obtenues : <b>{globalStats.percent_completed}%</b>
+                    </p>
+                    <div style={{
+                        background: '#eee',
+                        borderRadius: '8px',
+                        width: '100%',
+                        maxWidth: '200px',
+                        height: '10px',
+                    }}>
+                        <div style={{
+                            background: '#4caf50',
+                            width: `${globalStats.percent_completed}%`,
+                            height: '100%',
+                            borderRadius: '8px'
+                        }} />
+                    </div>
+                    <p>Cartes obtenues : <b>{globalStats.cards_obtained}</b></p>
+                    <p>Cartes non obtenues : <b>{globalStats.cards_not_obtained}</b></p>
+                    {globalRarityStats.length > 0 && (
+                        <div style={{ marginTop: '15px' }}>
+                            <h4>Cartes obtenues par rareté :</h4>
+                            <ul style={{ listStyle: 'none', padding: 0 }}>
+                                {globalRarityStats.map(rarity => (
+                                    <li key={rarity.rarity}>
+                                        <b>{rarity.rarity || 'Inconnue'} :</b> {rarity.obtained} / {rarity.total}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
+                </div>
+            )}
+            {/* Set-specific stats if set selected */}
             {setLogo && (
                 <div style={{ marginTop: '20px' }}>
                     <img src={setLogo} alt="Logo du set" style={{ maxWidth: '200px', height: 'auto' }} />
@@ -77,7 +129,6 @@ const InfoSet = ({ onSearchResults }) => {
                     <p>
                         % du set complété : <b>{setStats.percent_completed}%</b>
                     </p>
-                    {/* Progress bar */}
                     <div style={{
                         background: '#eee',
                         borderRadius: '8px',

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import '../styles/set.css'; // Assuming you have a CSS file for styles
 
 const AffichageSet = ({ setId }) => {
     const [cards, setCards] = useState([]);
@@ -61,8 +62,8 @@ const AffichageSet = ({ setId }) => {
             }}>
                 {cards.map(card => (
                     <div
+                        className='card-item'
                         key={card.id}
-                        style={{ textAlign: 'center', background: '#fff', borderRadius: '8px', padding: '10px', cursor: 'pointer' }}
                         onClick={() => setPopupCard(card)}
                     >
                         <img

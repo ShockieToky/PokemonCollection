@@ -89,12 +89,11 @@ const AjoutCollection = () => {
 
     return (
         <div>
-            <h2>Ajouter une carte à la collection</h2>
-
             {/* Sélection du set */}
             <div>
                 <label htmlFor="set">Set :</label>
                 <select
+                    className='ajout-select'
                     id="set"
                     value={selectedSet}
                     onChange={e => setSelectedSet(e.target.value)}
@@ -110,6 +109,7 @@ const AjoutCollection = () => {
             <div>
                 <label htmlFor="pokemon">Pokémon :</label>
                 <select
+                    className='ajout-select'
                     id="pokemon"
                     value={selectedPokemon}
                     onChange={e => setSelectedPokemon(e.target.value)}
@@ -128,6 +128,7 @@ const AjoutCollection = () => {
             <div>
                 <label htmlFor="rarity">Rareté :</label>
                 <select
+                    className='ajout-select'
                     id="rarity"
                     value={selectedRarity}
                     onChange={e => setSelectedRarity(e.target.value)}
@@ -147,10 +148,30 @@ const AjoutCollection = () => {
                 <div style={{ marginTop: '20px', textAlign: 'center' }}>
                     <img src={card.images_large} alt={card.name} style={{ width: '200px', borderRadius: '8px' }} />
                     <p>{card.name} - {card.rarity}</p>
-                    <button onClick={handleObtain}>Ajouter à la collection</button>
-                    <button onClick={handleAddToWishlist} style={{ marginLeft: '10px' }}>
-                        Ajouter à la wishlist
-                    </button>
+                    {card.obtained ? (
+                        <p style={{ color: 'green', fontWeight: 'bold' }}>déjà dans la collection</p>
+                    ) : (
+                        <>
+                            <button
+                                onClick={() => {
+                                    handleObtain();
+                                    setCard({ ...card, obtained: true, wishlisted: false });
+                                }}
+                            >
+                                Ajouter à la collection
+                            </button>
+                            <button
+                                onClick={() => {
+                                    handleAddToWishlist();
+                                    setCard({ ...card, wishlisted: true });
+                                }}
+                                style={{ marginLeft: '10px' }}
+                                disabled={card.wishlisted}
+                            >
+                                {card.wishlisted ? 'déjà dans la wishlist' : 'Ajouter à la wishlist'}
+                            </button>
+                        </>
+                    )}
                 </div>
             )}
             {success && <p>{success}</p>}

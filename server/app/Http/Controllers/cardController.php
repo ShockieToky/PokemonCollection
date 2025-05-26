@@ -290,4 +290,33 @@ class CardController extends Controller
 
         return response()->json($rarities);
     }
+
+    public function globalStats()
+    {
+        $total = \App\Models\Card::count();
+        $obtained = \App\Models\Card::where('obtained', true)->count();
+        $notObtained = $total - $obtained;
+        $percent = $total > 0 ? round($obtained / $total * 100, 2) : 0;
+        return response()->json([
+            'cards_obtained' => $obtained,
+            'cards_not_obtained' => $notObtained,
+            'percent_completed' => $percent,
+        ]);
+    }
+
+public function globalObtainedByRarity()
+    {
+        $rarities = \App\Models\Card::select('rarity')->distinct()->pluck('rarity');
+        $result = [];
+        foreach ($rarities as $rarity) {
+            $total = \App\Models\Card::where('rarity', $rarity)->count();
+            $obtained = \App\Models\Card::where('rarity', $rarity)->where('obtained', true)->count();
+            $result[] = [
+                'rarity' => $rarity,
+                'obtained' => $obtained,
+                'total' => $total,
+            ];
+        }
+        return response()->json($result);
+    }
 }

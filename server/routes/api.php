@@ -79,3 +79,7 @@ Route::get('/rarities', [CardController::class, 'getRaritiesForSetAndPokemon']);
 Route::get('/sets/{set}/wishlist-count', [SetController::class, 'wishlistCount']);
 
 Route::get('/sets/{set}/obtained-by-rarity', [SetController::class, 'obtainedByRarity']);
+
+Route::get('/cards/global-stats', [CardController::class, 'globalStats']);
+
+Route::get('/cards/global-obtained-by-rarity', [CardController::class, 'globalObtainedByRarity']);

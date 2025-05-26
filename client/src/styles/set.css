@@ -1,0 +1,22 @@
+.rechercheSet {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    text-align: center;
+    background-color: rgb(195, 206, 206);
+    width: 50%;
+    margin: auto;
+}
+
+.card-item {
+    text-align: center;
+    margin-left: 15px;
+    background-color: rgba(248, 237, 232, 0.294);
+    border-radius: 8px;
+    padding: 10px;
+    cursor: pointer;
+    height: auto;
+    width: 85%;
+}
