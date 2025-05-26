@@ -7,6 +7,8 @@ const InfoSet = ({ onSearchResults }) => {
     const [selectedSet, setSelectedSet] = useState('');
     const [setLogo, setSetLogo] = useState('');
     const [setStats, setSetStats] = useState(null);
+    const [wishlistCount, setWishlistCount] = useState(0);
+    const [rarityStats, setRarityStats] = useState([]);
 
     // Fetch all sets on mount
     useEffect(() => {
@@ -25,9 +27,21 @@ const InfoSet = ({ onSearchResults }) => {
             axios.get(`http://localhost:8000/api/sets/${selectedSet}/stats`)
                 .then(response => setSetStats(response.data))
                 .catch(() => setSetStats(null));
+
+            // Fetch wishlist count for the set
+            axios.get(`http://localhost:8000/api/sets/${selectedSet}/wishlist-count`)
+                .then(response => setWishlistCount(response.data.count || 0))
+                .catch(() => setWishlistCount(0));
+
+            // Fetch obtained by rarity for the set
+            axios.get(`http://localhost:8000/api/sets/${selectedSet}/obtained-by-rarity`)
+                .then(response => setRarityStats(response.data || []))
+                .catch(() => setRarityStats([]));
         } else {
             setSetLogo('');
             setSetStats(null);
+            setWishlistCount(0);
+            setRarityStats([]);
         }
         // Notify parent of the selected set
         if (onSearchResults) {
@@ -80,6 +94,19 @@ const InfoSet = ({ onSearchResults }) => {
                     </div>
                     <p>Cartes obtenues : <b>{setStats.cards_obtained}</b></p>
                     <p>Cartes non obtenues : <b>{setStats.cards_not_obtained}</b></p>
+                    <p>Cartes dans la wishlist : <b>{wishlistCount}</b></p>
+                    {rarityStats.length > 0 && (
+                        <div style={{ marginTop: '15px' }}>
+                            <h4>Cartes obtenues par rareté :</h4>
+                            <ul style={{ listStyle: 'none', padding: 0 }}>
+                                {rarityStats.map(rarity => (
+                                    <li key={rarity.rarity}>
+                                        <b>{rarity.rarity || 'Inconnue'} :</b> {rarity.obtained} / {rarity.total}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
                 </div>
             )}
         </div>

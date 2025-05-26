@@ -111,4 +111,39 @@ class SetController extends Controller
             'cards_not_obtained' => $notObtained,
         ]);
     }
+
+    public function wishlistCount($setId)
+    {
+        $count = \App\Models\Card::where('set_id', $setId)
+            ->where('wishlisted', true)
+            ->count();
+
+        return response()->json(['count' => $count]);
+    }
+
+    public function obtainedByRarity($setId)
+    {
+        $rarities = \App\Models\Card::where('set_id', $setId)
+            ->select('rarity')
+            ->distinct()
+            ->pluck('rarity');
+
+        $result = [];
+        foreach ($rarities as $rarity) {
+            $total = \App\Models\Card::where('set_id', $setId)
+                ->where('rarity', $rarity)
+                ->count();
+            $obtained = \App\Models\Card::where('set_id', $setId)
+                ->where('rarity', $rarity)
+                ->where('obtained', true)
+                ->count();
+            $result[] = [
+                'rarity' => $rarity,
+                'obtained' => $obtained,
+                'total' => $total,
+            ];
+        }
+
+        return response()->json($result);
+    }
 }

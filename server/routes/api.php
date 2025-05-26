@@ -75,3 +75,7 @@ Route::post('/cards/{id}/remove-from-collection', [CardController::class, 'remov
 Route::get('/sets/{set}/stats', [SetController::class, 'stats']);
 
 Route::get('/rarities', [CardController::class, 'getRaritiesForSetAndPokemon']);
+
+Route::get('/sets/{set}/wishlist-count', [SetController::class, 'wishlistCount']);
+
+Route::get('/sets/{set}/obtained-by-rarity', [SetController::class, 'obtainedByRarity']);
