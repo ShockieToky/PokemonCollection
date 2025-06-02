@@ -22,7 +22,7 @@ class CardController extends Controller
         if ($request->has('rarity')) {
             $query->where('rarity', $request->query('rarity'));
         }
-
+        
         return response()->json($query->get());
     }
 
@@ -80,17 +80,23 @@ class CardController extends Controller
         return response()->json(['message' => 'Card deleted successfully']);
     }
 
-    // Affiche le nombre total de cartes
-    // (Méthode supprimée car elle était en double)
+    public function collectionCardsCount(): \Illuminate\Http\JsonResponse
+    {
+        // Compte le nombre de cartes obtenues
+        $total = Card::where('obtained', true)->count();
+        // Retourne le total en JSON
+        return response()->json(['total' => $total]);
+    }
 
     // Affiche les 6 cartes les plus récentes
     public function recentCards(): \Illuminate\Http\JsonResponse
     {
         $cards = \App\Models\Card::where('obtained', true)
+            // ordre par date d'obtention décroissante
             ->orderByDesc('obtained_at')
+            // limite à 6 cartes
             ->limit(6)
             ->get();
-
         return response()->json($cards);
     }
 
@@ -98,41 +104,74 @@ class CardController extends Controller
     public function searchCards(Request $request): JsonResponse
     {
         $query = Card::query();
-
         if ($request->has('set_id')) {
+            // Filtre par set_id
             $query->where('set_id', $request->query('set_id'));
         }
 
         if ($request->has('pokemon')) {
+            // Filtre par nom de Pokémon
             $query->where('name', $request->query('pokemon'));
         }
 
         if ($request->has('rarity')) {
+            // Filtre par rareté
             $query->where('rarity', $request->query('rarity'));
         }
 
+        // Retourne les cartes filtrées
         $cards = $query->get();
-
         return response()->json($cards);
     }
 
+    // Ajoute une carte à la collection
     public function addToCollection(int $id): JsonResponse
     {
+        // Trouve la carte par son ID
         $card = Card::findOrFail($id);
+        // Ajoute la carte à la collection
         $card->obtained = true;
+        // Définit la date d'obtention à maintenant
         $card->obtained_at = now();
+        // Enregistre les modifications
         $card->save();
-
-        return response()->json(['message' => 'Card added to collection successfully']);
+        // Retourne une réponse JSON
+        return response()->json(['message' => 'Card ajouté à la collection avec succès']);
     }
 
+    // Retire une carte de la wishlist
+    public function removeFromWishlist(int $id): \Illuminate\Http\JsonResponse
+    {
+        // Trouve la carte par son ID
+        $card = Card::findOrFail($id);
+        // Met à jour le champ wishlisted à false
+        $card->wishlisted = false;
+        // Enregistre les modifications
+        $card->save();
+        // Retourne une réponse JSON
+        return response()->json(['message' => 'Card removed from wishlist']);
+    }
+
+    // Ajoute une carte à la wishlist
     public function addToWishlist(int $id): JsonResponse
     {
+        // Trouve la carte par son ID
         $card = Card::findOrFail($id);
+        // Met à jour le champ wishlisted à true
         $card->wishlisted = true;
+        // Enregistre les modifications
         $card->save();
-
+        // Retourne une réponse JSON
         return response()->json(['message' => 'Card added to wishlist successfully']);
+    }
+
+    // Récupère la rareté des cartes
+    public function getRarities(): JsonResponse
+    {
+        // Sélectionne les raretés distinctes des cartes
+        $rarities = Card::select('rarity')->distinct()->pluck('rarity');
+        // Retourne les raretés en JSON
+        return response()->json($rarities);
     }
 
     public function getWishlistCards(Request $request): JsonResponse
@@ -196,13 +235,6 @@ class CardController extends Controller
         return response()->json($cards);
     }
 
-    public function getRarities(): JsonResponse
-    {
-        $rarities = Card::select('rarity')->distinct()->pluck('rarity');
-
-        return response()->json($rarities);
-    }
-
     public function totalCards(): JsonResponse
     {
         $total = \App\Models\Card::count();
@@ -245,21 +277,6 @@ class CardController extends Controller
         $cards = $query->paginate(16);
 
         return response()->json($cards);
-    }
-
-    public function collectionCardsCount(): \Illuminate\Http\JsonResponse
-    {
-        $total = Card::where('obtained', true)->count();
-        return response()->json(['total' => $total]);
-    }
-
-    public function removeFromWishlist(int $id): \Illuminate\Http\JsonResponse
-    {
-        $card = Card::findOrFail($id);
-        $card->wishlisted = false;
-        $card->save();
-
-        return response()->json(['message' => 'Card removed from wishlist']);
     }
 
     public function removeFromCollection(int $id): \Illuminate\Http\JsonResponse

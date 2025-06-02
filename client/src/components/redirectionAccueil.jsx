@@ -1,7 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
+// Composant pour la redirection vers différentes pages
 const RedirectionAccueil = () => {
+    // Hook pour la navigation
     const navigate = useNavigate();
 
     return (

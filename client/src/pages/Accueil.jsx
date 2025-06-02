@@ -7,7 +7,9 @@ import RechercheAccueil from '../components/rechercheAccueil';
 import AffichageRecherche from '../components/affichageRecherche';
 import '../styles/accueil.css';
 
+// Composant principal de la page d'accueil
 const Accueil = () => {
+    // État pour les filtres de recherche
     const [searchFilters, setSearchFilters] = useState({
         set: null,
         pokemon: null,

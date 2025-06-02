@@ -11,8 +11,9 @@ class SetController extends Controller
     // liste de tous les sets
     public function index(): JsonResponse
     {
+        // Récupérer tous les sets de la base de données
         $sets = Set::all();
-
+        // returner la liste des sets en format JSON
         return response()->json($sets);
     }
 
@@ -71,19 +72,22 @@ class SetController extends Controller
     // Obtenir le set le plus complet
     public function mostComplete(): \Illuminate\Http\JsonResponse
     {
-        // Get all sets
+        // Récupérer tous les sets avec le nombre total de cartes et le nombre de cartes obtenues
         $sets = \App\Models\Set::withCount(['cards as total_cards', 'cards as obtained_cards' => function ($query) {
+            // Compter uniquement les cartes obtenues
             $query->where('obtained', true);
         }])->get();
 
-        // Calculate completion % for each set
+        // Calcul de la complétion et des cartes restantes
         $sets = $sets->map(function ($set) {
+            // Calculer le pourcentage
             $set->completion = $set->total_cards > 0 ? round(($set->obtained_cards / $set->total_cards) * 100, 2) : 0;
+            // Calculer le nombre de cartes restantes
             $set->remaining = $set->total_cards - $set->obtained_cards;
             return $set;
         });
 
-        // Get the set with the highest completion %
+        // Récupérer le set avec le pourcentage de complétion le plus élevé
         $mostComplete = $sets->sortByDesc('completion')->first();
 
         return response()->json($mostComplete);
