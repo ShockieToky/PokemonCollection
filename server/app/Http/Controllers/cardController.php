@@ -174,6 +174,7 @@ class CardController extends Controller
         return response()->json($rarities);
     }
 
+    // Récupère les cartes de la wishlist avec des options de filtrage et de tri
     public function getWishlistCards(Request $request): JsonResponse
     {
         $query = Card::where('wishlisted', true);
@@ -188,20 +189,20 @@ class CardController extends Controller
             $query->where('rarity', $request->query('rarity'));
         }
 
-        // Sorting logic
+        // gestion de tri
         if ($request->has('sort')) {
             switch ($request->query('sort')) {
                 case 'name-asc':
                     $query->orderBy('name', 'asc');
                     break;
                 case 'set-asc':
-                    // Join with sets table to sort by set releaseDate ascending
+                    // Utilisation d'une jointure avec la table des sets pour trier par date de sortie du set ascendant
                     $query->join('sets', 'cards.set_id', '=', 'sets.id')
                         ->orderBy('sets.releaseDate', 'asc')
                         ->select('cards.*');
                     break;
                 case 'set-desc':
-                    // Join with sets table to sort by set releaseDate descending
+                    // Utilisation d'une jointure avec la table des sets pour trier par date de sortie du set descendant
                     $query->join('sets', 'cards.set_id', '=', 'sets.id')
                         ->orderBy('sets.releaseDate', 'desc')
                         ->select('cards.*');
@@ -209,25 +210,27 @@ class CardController extends Controller
             }
         }
 
+        // Pagination des résultats, 21 cartes par page
         $cards = $query->paginate(21);
-
+        // Retourne les cartes de la wishlist en JSON
         return response()->json($cards);
     }
 
+    // Recherche des cartes dans la wishlist avec des options de filtrage
     public function searchWishlist(Request $request): JsonResponse
     {
         $query = Card::where('wishlisted', true);
 
         if ($request->has('name')) {
-            $query->where('name', 'like', '%' . $request->query('name') . '%');
+            $query->where('name', 'like', '%' . $request->query('name') . '%'); // Filtre les cartes par nom
         }
 
         if ($request->has('set')) {
-            $query->where('set_id', $request->query('set'));
+            $query->where('set_id', $request->query('set')); // Filtre les cartes par set_id
         }
 
         if ($request->has('rarity')) {
-            $query->where('rarity', $request->query('rarity'));
+            $query->where('rarity', $request->query('rarity')); // Filtre les cartes par rareté
         }
 
         $cards = $query->get();
@@ -241,52 +244,56 @@ class CardController extends Controller
         return response()->json(['total' => $total]);
     }
 
+    // Récupère les cartes de la collection avec des options de filtrage et de tri
     public function collectionCards(Request $request): \Illuminate\Http\JsonResponse
     {
         $query = Card::where('obtained', true);
 
-        if ($request->has('name') && $request->query('name') !== '') {
-            $query->where('name', 'like', '%' . $request->query('name') . '%');
+        if ($request->has('name') && $request->query('name') !== '') { // Vérifie si le paramètre 'name' est présent et non vide
+            $query->where('name', 'like', '%' . $request->query('name') . '%'); // Filtre les cartes par nom
         }
-        if ($request->has('set') && $request->query('set') !== '') {
-            $query->where('set_id', $request->query('set'));
+        if ($request->has('set') && $request->query('set') !== '') { // Vérifie si le paramètre 'set' est présent et non vide
+            $query->where('set_id', $request->query('set')); // Filtre les cartes par set_id
         }
-        if ($request->has('rarity') && $request->query('rarity') !== '') {
-            $query->where('rarity', $request->query('rarity'));
+        if ($request->has('rarity') && $request->query('rarity') !== '') {  // Vérifie si le paramètre 'rarity' est présent et non vide
+            $query->where('rarity', $request->query('rarity')); // Filtre les cartes par rareté
         }
 
-        // Sorting logic (optional)
+        // Gestion du tri des cartes
         if ($request->has('sort')) {
             switch ($request->query('sort')) {
-                case 'name-asc':
+                case 'name-asc': // Tri par nom de carte en ordre ascendant
                     $query->orderBy('name', 'asc');
                     break;
-                case 'set-asc':
-                    $query->join('sets', 'cards.set_id', '=', 'sets.id')
+                case 'set-asc': // Tri par date de sortie du set en ordre ascendant
+                    $query->join('sets', 'cards.set_id', '=', 'sets.id') // Jointure avec la table des sets
                         ->orderBy('sets.releaseDate', 'asc')
                         ->select('cards.*');
                     break;
-                case 'set-desc':
-                    $query->join('sets', 'cards.set_id', '=', 'sets.id')
+                case 'set-desc': // Tri par date de sortie du set en ordre descendant
+                    $query->join('sets', 'cards.set_id', '=', 'sets.id') // Jointure avec la table des sets
                         ->orderBy('sets.releaseDate', 'desc')
                         ->select('cards.*');
                     break;
             }
         }
 
+        // Pagination des résultats, 16 cartes par page
         $cards = $query->paginate(16);
 
         return response()->json($cards);
     }
 
+    // Retire une carte de la collection
     public function removeFromCollection(int $id): \Illuminate\Http\JsonResponse
     {
-        $card = Card::findOrFail($id);
-        $card->obtained = false;
-        $card->obtained_at = null;
-        $card->save();
+        $card = Card::findOrFail($id); // Trouve la carte par son ID
+        $card->obtained = false; // Met à jour le champ 'obtained' à false
+        $card->obtained_at = null; // Réinitialise la date d'obtention
+        $card->save(); // Enregistre les modifications
 
-        return response()->json(['message' => 'Card removed from collection']);
+        // Retourne une réponse JSON indiquant que la carte a été retirée de la collection
+        return response()->json(['message' => 'Cartes retirée de la collection avec succès']);
     }
 
     public function getRaritiesForSetAndPokemon(\Illuminate\Http\Request $request)

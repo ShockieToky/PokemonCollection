@@ -10,7 +10,7 @@ const RechercheWishlist = ({ onSearchResults }) => {
     const [sortOption, setSortOption] = useState('');
 
     useEffect(() => {
-        // Fetch all sets for the dropdown menu
+        // Récupération des sets pour le menu déroulant
         axios.get('http://localhost:8000/api/sets')
             .then(response => {
                 setSets(response.data);
@@ -19,7 +19,7 @@ const RechercheWishlist = ({ onSearchResults }) => {
                 console.error('Error fetching sets:', error);
             });
 
-        // Fetch all rarities for the dropdown menu
+        // Récupération des raretés pour le menu déroulant
         axios.get('http://localhost:8000/api/rarities')
             .then(response => {
                 setRarities(response.data);
@@ -30,7 +30,7 @@ const RechercheWishlist = ({ onSearchResults }) => {
     }, []);
 
     useEffect(() => {
-        // Update search filters whenever inputs change
+        // Mise à jour des résultats de recherche lorsque les filtres changent
         onSearchResults({
             name: searchName,
             set: selectedSet,

@@ -1,36 +1,38 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
+// Composant de recherche pour la collection de cartes Pokémon
 const RechercheCollection = ({ onSearchResults }) => {
-    const [searchName, setSearchName] = useState('');
-    const [sets, setSets] = useState([]);
-    const [rarities, setRarities] = useState([]);
-    const [selectedSet, setSelectedSet] = useState('');
-    const [selectedRarity, setSelectedRarity] = useState('');
-    const [sortOption, setSortOption] = useState('');
+    const [searchName, setSearchName] = useState(''); // État pour le nom du Pokémon recherché
+    const [sets, setSets] = useState([]); // État pour les sets de cartes
+    const [rarities, setRarities] = useState([]); // État pour les raretés de cartes
+    const [selectedSet, setSelectedSet] = useState(''); // État pour le set sélectionné
+    const [selectedRarity, setSelectedRarity] = useState(''); // État pour la rareté sélectionnée
+    const [sortOption, setSortOption] = useState(''); // État pour l'option de tri sélectionnée
 
+    // Effet pour récupérer les sets et raretés depuis l'API lors du chargement du composant
     useEffect(() => {
-        // Fetch all sets for the dropdown menu
+        // Récupération de tous les sets depuis l'API
         axios.get('http://localhost:8000/api/sets')
             .then(response => {
                 setSets(response.data);
             })
             .catch(error => {
-                console.error('Error fetching sets:', error);
+                console.error('Erreur lors de la récupération des sets:', error);
             });
 
-        // Fetch all rarities for the dropdown menu
+        // Récupération de toutes les raretés depuis l'API
         axios.get('http://localhost:8000/api/rarities')
             .then(response => {
                 setRarities(response.data);
             })
             .catch(error => {
-                console.error('Error fetching rarities:', error);
+                console.error('Erreur lors de la récupération des raretés:', error);
             });
     }, []);
 
     useEffect(() => {
-        // Update search filters whenever inputs change
+        // Mise à jour des résultats de recherche lorsque les filtres changent
         onSearchResults({
             name: searchName,
             set: selectedSet,

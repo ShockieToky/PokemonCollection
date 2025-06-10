@@ -56,21 +56,23 @@ Route::get('/rarities', [CardController::class, 'getRarities']);
 // Route pour récupérer les cartes de la collection
 Route::get('/cards/collection', [CardController::class, 'collectionCards']);
 
+// Route pour récupérer les cartes de la wishlist
+Route::get('/cards/wishlist', [CardController::class, 'getWishlistCards']);
+
+// Route pour rechercher des cartes dans la wishlist
+Route::get('/cards/wishlist/search', [CardController::class, 'searchWishlist']);
+
+// Route pour retirer une carte de la collection
+Route::post('/cards/{id}/remove-from-collection', [CardController::class, 'removeFromCollection']);
+
 
 // Route for fetching all types
 Route::get('/types', [TypeController::class, 'index']);
 
-// Route for fetching cards in the wishlist
-Route::get('/cards/wishlist', [CardController::class, 'getWishlistCards']);
-
-// Route for searching cards in the wishlist
-Route::get('/cards/wishlist/search', [CardController::class, 'searchWishlist']);
 
 // Route for fetching all cards
 Route::get('/cards/total', [CardController::class, 'totalCards']);
 
-// Route for removing a card from the collection
-Route::post('/cards/{id}/remove-from-collection', [CardController::class, 'removeFromCollection']);
 
 // Route for fetching the stats of a specific set
 Route::get('/sets/{set}/stats', [SetController::class, 'stats']);

@@ -34,6 +34,7 @@ body {
     padding: 0;
 }
 
+/* Style général pour la wishlist */
 .wishlist {
     min-height: 100vh;
     min-width: 100vw;
@@ -46,6 +47,7 @@ body {
     grid-row-gap: 0px;
 }
 
+/* Partie pour la recherche */
 .rechercheWishlist {
     grid-area: 1 / 1 / 6 / 2;
     background-color: grey;
@@ -54,6 +56,7 @@ body {
     text-align: center;
 }
 
+/* Style pour les éléments de recherche */
 .rechercheWishlist label {
     margin-bottom: 4px;
     font-weight: bold;
@@ -66,6 +69,7 @@ body {
     text-align: center;
 }
 
+/* Partie pour l'affichage des cartes dans la wishlist */
 .affichageCartesW {
     grid-area: 1 / 2 / 6 / 6;
     background-color: rgb(191, 84, 8);
