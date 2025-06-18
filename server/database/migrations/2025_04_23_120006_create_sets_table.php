@@ -6,9 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateSetsTable extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+    /** Faire la migration */
     public function up(): void
     {
         Schema::create('sets', function (Blueprint $table) {
@@ -23,9 +21,7 @@ class CreateSetsTable extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+    /** annuler la migration */
     public function down(): void
     {
         Schema::dropIfExists('sets');
