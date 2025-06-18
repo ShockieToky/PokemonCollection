@@ -50,7 +50,7 @@ const fetchCards = async (apiSetId) => {
     return allCards;
 };
 
-// 5. Insert cards into your database, mapping by local set id
+// 5. Insertion des cartes dans la base de données
 const insertCards = async (cards, localSetId) => {
     const connection = await pool.getConnection();
     try {
@@ -98,14 +98,14 @@ const insertCards = async (cards, localSetId) => {
     }
 };
 
-// 6. Main function to run everything
+// 6. Fonction principale pour récupérer les sets et insérer les cartes
 const main = async () => {
     try {
-        // Fetch sets from DB and API
+        // Récupération des sets depuis la base de données et l'API
         const dbSets = await fetchSetsFromDB();
         const apiSets = await fetchApiSets();
 
-        // Build a mapping from set name to local set id
+        // Construire un mapping des noms de sets de la base de données vers leurs IDs
         const setNameToId = {};
         dbSets.forEach(set => {
             setNameToId[set.name] = set.id;
