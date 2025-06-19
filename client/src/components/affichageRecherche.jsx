@@ -83,13 +83,13 @@ const AffichageRecherche = ({ searchFilters }) => {
             {/* Affichage des cartes en fonction des filtres de recherche */}
             {cards.length > 0 ? (
                 // Affichage de la carte actuelle avec ses actions
-                <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                <div className='carte-recherche'>
                     <img
+                        className='image-recherche'
                         src={cards[currentIndex].images_large}
                         alt={cards[currentIndex].name}
-                        style={{ width: '250px', height: 'auto', borderRadius: '8px' }}
                     />
-                    <div style={{ marginTop: '10px' }}>
+                    <div>
                         {/* Affichage du nom de la carte et de ses détails */}
                         {cards[currentIndex].obtained ? (
                             // Si la carte est obtenue, affiche le message de sa présence dans la collection
@@ -100,7 +100,6 @@ const AffichageRecherche = ({ searchFilters }) => {
                                 <button
                                     className='bouton-recherche'
                                     onClick={() => handleAddToCollection(cards[currentIndex].id)}
-                                    style={{ marginRight: '10px' }}
                                 >
                                     ✅ collection
                                 </button>

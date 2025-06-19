@@ -26,15 +26,15 @@ const AffichageCartesRécentes = () => {
             {/* Affichage des cartes récemment obtenues */}
             {recentCards.length > 0 ? (
                 // Affichage des cartes dans une grille
-                < div className='cartesrecentes' style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                < div className='cartesrecentes'>
                     {/* Parcours des cartes et affichage de chaque carte */}
                     {recentCards.map((card) => (
                         // Affichage de chaque carte avec son image ou son nom
-                        <div key={card.id} style={{ textAlign: 'center' }}>
+                        <div className='bloc-cartes' key={card.id}>
                             <img
+                                className='image-carte'
                                 src={card.images_large}
                                 alt={card.name}
-                                style={{ width: '150px', height: 'auto', borderRadius: '8px' }}
                             />
                         </div>
                     ))}
