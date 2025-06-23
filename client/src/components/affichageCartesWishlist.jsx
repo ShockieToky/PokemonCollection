@@ -1,16 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
+const getPerPage = () => {
+    if (window.innerWidth < 600) return 3;      // mobile
+    if (window.innerWidth < 1024) return 4;     // tablette
+    return 21;                                    // bureau
+};
+
 const AffichageCartesWishlist = ({ searchFilters }) => {
     const [wishlistCards, setWishlistCards] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [successMsg, setSuccessMsg] = useState('');
     const [popupCard, setPopupCard] = useState(null);
+    const [perPage, setPerPage] = useState(getPerPage());
+
+    // Update perPage on resize
+    useEffect(() => {
+        const handleResize = () => setPerPage(getPerPage());
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         // Récupération des cartes de la wishlist avec les filtres et la pagination
-        let query = `http://localhost:8000/api/cards/wishlist?page=${currentPage}`;
+        let query = `http://localhost:8000/api/cards/wishlist?page=${currentPage}&perPage=${perPage}`;
         if (searchFilters.name) query += `&name=${searchFilters.name}`;
         if (searchFilters.set) query += `&set=${searchFilters.set}`;
         if (searchFilters.rarity) query += `&rarity=${searchFilters.rarity}`;
@@ -22,9 +36,9 @@ const AffichageCartesWishlist = ({ searchFilters }) => {
                 setTotalPages(response.data.last_page); // nombre total de pages
             })
             .catch(error => {
-                console.error('Error fetching wishlist cards:', error);
+                console.error('Erreur lors de la récupération des cartes:', error);
             });
-    }, [currentPage, searchFilters]);
+    }, [currentPage, searchFilters, perPage]);
 
     const handlePreviousPage = () => {
         if (currentPage > 1) {
@@ -94,18 +108,17 @@ const AffichageCartesWishlist = ({ searchFilters }) => {
             {/* Affichage des cartes de la wishlist */}
             {wishlistCards.length > 0 ? (
                 <div>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                    <div className='wishlist-card'>
                         {wishlistCards.map((card) => (
                             <div
                                 key={card.id}
                                 className="affichage-cartes-wishlist-card"
-                                style={{ textAlign: 'center', cursor: 'pointer' }}
                                 onClick={() => setPopupCard(card)} // Ouvre la popup avec les détails de la carte
                             >
                                 <img
                                     src={card.images_large}
                                     alt={card.name}
-                                    style={{ width: '150px', height: 'auto', borderRadius: '8px' }}
+                                    className='popup-card'
                                 />
                                 <div style={{ marginTop: '8px' }}>
                                     <button
@@ -127,53 +140,22 @@ const AffichageCartesWishlist = ({ searchFilters }) => {
                     </div>
                     {/* Gestion de la popup */}
                     {popupCard && (
-                        <div
-                            style={{
-                                position: 'fixed',
-                                top: 0, left: 0, right: 0, bottom: 0,
-                                background: 'rgba(0,0,0,0.7)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                zIndex: 1000
-                            }}
+                        <div className='gestion-popup'
                             onClick={closePopup} // Ferme la popup en cliquant en dehors de la carte
                         >
-                            <div
-                                style={{
-                                    padding: 20,
-                                    borderRadius: 10,
-                                    boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
-                                    position: 'relative'
-                                }}
+                            <div className='popup-card-details'
                                 onClick={e => e.stopPropagation()} // Empêche la fermeture de la popup en cliquant sur la carte
                             >
                                 <img
+                                    className='image-popup'
                                     src={popupCard.images_large}
                                     alt={popupCard.name}
-                                    style={{ width: '350px', height: 'auto', borderRadius: '8px' }}
                                 />
-                                <p style={{ textAlign: 'center', margin: '10px 0 0 0', color: 'white', fontWeight: 'bold' }}>{popupCard.name}</p>
-                                <button
-                                    onClick={closePopup} // Ferme la popup
-                                    style={{
-                                        position: 'absolute',
-                                        top: 10,
-                                        right: 10,
-                                        background: '#eee',
-                                        border: 'none',
-                                        borderRadius: '50%',
-                                        width: 30,
-                                        height: 30,
-                                        fontSize: 18,
-                                        cursor: 'pointer'
-                                    }}
-                                >×</button>
                             </div>
                         </div>
                     )}
                     {/* Gestion de la pagination */}
-                    <div style={{ marginTop: '20px', textAlign: 'center' }}>
+                    <div className='pagination'>
                         <button
                             onClick={handlePreviousPage}
                             disabled={currentPage === 1}

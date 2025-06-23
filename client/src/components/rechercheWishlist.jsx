@@ -16,7 +16,7 @@ const RechercheWishlist = ({ onSearchResults }) => {
                 setSets(response.data);
             })
             .catch(error => {
-                console.error('Error fetching sets:', error);
+                console.error('Erreur lors de la récupération des sets:', error);
             });
 
         // Récupération des raretés pour le menu déroulant
@@ -25,7 +25,7 @@ const RechercheWishlist = ({ onSearchResults }) => {
                 setRarities(response.data);
             })
             .catch(error => {
-                console.error('Error fetching rarities:', error);
+                console.error('Erreur lors de la récupération de la rareté:', error);
             });
     }, []);
 

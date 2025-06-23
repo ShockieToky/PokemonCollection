@@ -210,8 +210,11 @@ class CardController extends Controller
             }
         }
 
+        // Utilise le paramètre perPage du front, sinon 21 par défaut
+        $perPage = $request->query('perPage');
+
         // Pagination des résultats, 21 cartes par page
-        $cards = $query->paginate(21);
+        $cards = $query->paginate($perPage);
         // Retourne les cartes de la wishlist en JSON
         return response()->json($cards);
     }
