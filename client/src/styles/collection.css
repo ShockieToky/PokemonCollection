@@ -1,32 +1,3 @@
-/* Responsive for tablets */
-@media (max-width: 1024px) {
-    .collection {
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: auto auto auto;
-    }
-
-    .affichageCartesC {
-        grid-area: 1 / 1 / 2 / 3;
-    }
-
-    .rechercheCollection {
-        grid-area: 2 / 1 / 3 / 3;
-    }
-}
-
-/* Responsive for mobile */
-@media (max-width: 600px) {
-    .collection {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto auto;
-    }
-
-    .affichageCartesC,
-    .rechercheCollection {
-        grid-area: auto / auto / auto / auto;
-    }
-}
-
 html,
 body {
     height: 100%;
@@ -78,11 +49,24 @@ body {
 }
 
 /* Style pour les cartes de collection */
+
+.collection-card {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
 .affichage-cartes-collection-card {
     margin-top: 40px;
     margin-left: 13px;
     margin-right: 13px;
     text-align: center;
+}
+
+.image-collection {
+    width: 150px;
+    height: auto;
+    border-radius: 8px;
 }
 
 .bouton-collection {
@@ -91,4 +75,92 @@ body {
     font-size: 15px;
     font-weight: bold;
     cursor: pointer;
+}
+
+.pagination-collection {
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* Responsive for tablets */
+@media (max-width: 1024px) {
+
+    .rechercheCollection {
+        font-size: 14px;
+        padding: 8px 0;
+    }
+
+    .rechercheCollection label,
+    .rechercheCollection select,
+    .rechercheCollection input {
+        font-size: 13px;
+        margin-bottom: 10px;
+    }
+
+    .affichageCartesC {
+        font-size: 14px;
+        padding: 8px 32px;
+
+    }
+
+    .affichage-cartes-collection-card {
+        margin-top: 20px;
+        margin-left: 8px;
+        margin-right: 8px;
+    }
+
+    .image-collection {
+        width: 100px;
+    }
+
+    .pagination-collection {
+        margin-top: 10px;
+    }
+
+    .bouton-collection {
+        font-size: 11px;
+    }
+
+    .bouton-pagination {
+        font-size: 11px;
+    }
+}
+
+/* Responsive for mobile */
+@media (max-width: 600px) {
+
+    .rechercheCollection {
+        font-size: 10px;
+        padding: 4px 0;
+    }
+
+    .rechercheCollection label,
+    .rechercheCollection select,
+    .rechercheCollection input {
+        font-size: 10px;
+        margin-bottom: 6px;
+    }
+
+    .affichageCartesC {
+        font-size: 10px;
+        padding: 4px 4px;
+    }
+
+    .affichage-cartes-collection-card {
+        margin-top: 10px;
+        margin-left: 4px;
+        margin-right: 4px;
+    }
+
+    .image-collection {
+        width: 60px;
+    }
+
+    .pagination-collection {
+        margin-top: 6px;
+    }
+
+    .bouton-collection {
+        font-size: 10px;
+    }
 }

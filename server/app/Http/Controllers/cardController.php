@@ -281,8 +281,9 @@ class CardController extends Controller
             }
         }
 
-        // Pagination des résultats, 16 cartes par page
-        $cards = $query->paginate(16);
+        // Utilise le paramètre perPage du front
+        $perPage = $request->query('perPage');
+        $cards = $query->paginate($perPage);
 
         return response()->json($cards);
     }

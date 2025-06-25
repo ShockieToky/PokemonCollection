@@ -1,15 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-// Composant pour afficher les cartes de la collection avec pagination et filtres
+// Helper to determine perPage based on screen size
+const getPerPage = () => {
+    if (window.innerWidth < 600) return 6;      // mobile
+    if (window.innerWidth < 1024) return 10;    // tablette
+    return 16;                                   // bureau
+};
+
 const AffichageCartesCollection = ({ searchFilters }) => {
-    const [collectionCards, setCollectionCards] = useState([]); // État pour stocker les cartes de la collection
-    const [currentPage, setCurrentPage] = useState(1); // État pour la page actuelle de la pagination
-    const [totalPages, setTotalPages] = useState(1); // État pour le nombre total de pages
+    const [collectionCards, setCollectionCards] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [perPage, setPerPage] = useState(getPerPage());
+
+    // Mise à jour de perPage lors du redimensionnement de la fenêtre
+    useEffect(() => {
+        const handleResize = () => setPerPage(getPerPage());
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         // Récupération des cartes de la collection avec les filtres et la pagination
-        let query = `http://localhost:8000/api/cards/collection?page=${currentPage}`;
+        let query = `http://localhost:8000/api/cards/collection?page=${currentPage}&perPage=${perPage}`;
         if (searchFilters.name) query += `&name=${searchFilters.name}`;
         if (searchFilters.set) query += `&set=${searchFilters.set}`;
         if (searchFilters.rarity) query += `&rarity=${searchFilters.rarity}`;
@@ -17,26 +31,26 @@ const AffichageCartesCollection = ({ searchFilters }) => {
 
         axios.get(query)
             .then(response => {
-                setCollectionCards(response.data.data || []); // tableau vide si pas de données
-                setTotalPages(response.data.last_page || 1); // 1 page par défaut si pas de données
+                setCollectionCards(response.data.data || []);
+                setTotalPages(response.data.last_page || 1);
             })
             .catch(error => {
-                console.error('Error fetching collection cards:', error);
-                setCollectionCards([]); // vider le tableau en cas d'erreur
+                console.error('Error lors de la récupération de la collection:', error);
+                setCollectionCards([]);
             });
-    }, [currentPage, searchFilters]);
+    }, [currentPage, searchFilters, perPage]);
 
     // Fonction pour aller à la page précédente
     const handlePreviousPage = () => {
         if (currentPage > 1) {
-            setCurrentPage(currentPage - 1); // Décrémenter la page actuelle si ce n'est pas la première page
+            setCurrentPage(currentPage - 1);
         }
     };
 
     // Fonction pour aller à la page suivante
     const handleNextPage = () => {
         if (currentPage < totalPages) {
-            setCurrentPage(currentPage + 1); // Incrémenter la page actuelle si ce n'est pas la dernière page
+            setCurrentPage(currentPage + 1);
         }
     };
 
@@ -77,13 +91,13 @@ const AffichageCartesCollection = ({ searchFilters }) => {
             {collectionCards.length > 0 ? (
                 <div>
                     {/* Affichage des cartes de la collection */}
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                    <div className='collection-card'>
                         {collectionCards.map((card) => (
-                            <div className="affichage-cartes-collection-card" key={card.id} style={{ textAlign: 'center' }}>
+                            <div className="affichage-cartes-collection-card" key={card.id}>
                                 <img
+                                    className='image-collection'
                                     src={card.images_large}
                                     alt={card.name}
-                                    style={{ width: '150px', height: 'auto', borderRadius: '8px' }}
                                 />
                                 <p>{card.name}</p>
                                 {/* Supprimer de la collection */}
@@ -94,8 +108,9 @@ const AffichageCartesCollection = ({ searchFilters }) => {
                         ))}
                     </div>
                     {/* Controle de la pagination */}
-                    <div style={{ marginTop: '20px', textAlign: 'center' }}>
+                    <div className='pagination-collection'>
                         <button
+                            className='bouton-pagination'
                             onClick={handlePreviousPage}
                             disabled={currentPage === 1}
                             style={{ marginRight: '10px' }}
@@ -104,6 +119,7 @@ const AffichageCartesCollection = ({ searchFilters }) => {
                         </button>
                         <span>Page {currentPage} sur {totalPages}</span>
                         <button
+                            className='bouton-pagination'
                             onClick={handleNextPage}
                             disabled={currentPage === totalPages}
                             style={{ marginLeft: '10px' }}
