@@ -12,14 +12,14 @@ const AjoutCollection = () => {
     const [card, setCard] = useState(null);
     const [success, setSuccess] = useState('');
 
-    // Fetch sets on mount
+    // récupération des sets au chargement du composant
     useEffect(() => {
         axios.get('http://localhost:8000/api/sets')
             .then(response => setSets(response.data))
-            .catch(error => console.error('Error fetching sets:', error));
+            .catch(error => console.error('Erreur lors de la récupération des sets:', error));
     }, []);
 
-    // Fetch pokemons when set changes
+    // Récupération des pokémons quand un set est sélectionné
     useEffect(() => {
         if (selectedSet) {
             setSelectedPokemon('');
@@ -28,7 +28,7 @@ const AjoutCollection = () => {
             setCard(null);
             axios.get(`http://localhost:8000/api/pokemons?set_id=${selectedSet}`)
                 .then(response => setPokemons(response.data))
-                .catch(error => console.error('Error fetching pokemons:', error));
+                .catch(error => console.error('Erreur lors de la récupération du pokémon:', error));
         } else {
             setPokemons([]);
             setSelectedPokemon('');
@@ -38,14 +38,14 @@ const AjoutCollection = () => {
         }
     }, [selectedSet]);
 
-    // Fetch rarities when pokemon changes
+    // Récupération des raretés quand un pokémon est sélectionné
     useEffect(() => {
         if (selectedSet && selectedPokemon) {
             setSelectedRarity('');
             setCard(null);
             axios.get(`http://localhost:8000/api/rarities?set_id=${selectedSet}&pokemon=${selectedPokemon}`)
                 .then(response => setRarities(response.data))
-                .catch(error => console.error('Error fetching rarities:', error));
+                .catch(error => console.error('Erreur lors de la récupération de la rareté:', error));
         } else {
             setRarities([]);
             setSelectedRarity('');
@@ -53,7 +53,7 @@ const AjoutCollection = () => {
         }
     }, [selectedSet, selectedPokemon]);
 
-    // Fetch card when rarity changes
+    // Récupération de la carte quand un set, un pokémon et une rareté sont sélectionnés
     useEffect(() => {
         if (selectedSet && selectedPokemon && selectedRarity) {
             axios.get('http://localhost:8000/api/cards', {
@@ -70,7 +70,7 @@ const AjoutCollection = () => {
         if (card) {
             axios.post(`http://localhost:8000/api/cards/${card.id}/add-to-collection`)
                 .then(() => {
-                    // Remove from wishlist after adding to collection
+                    // Retirer la carte de la wishlist si elle y est
                     axios.post(`http://localhost:8000/api/cards/${card.id}/remove-from-wishlist`)
                         .then(() => setSuccess('Carte ajoutée à la collection et retirée de la wishlist !'))
                         .catch(() => setSuccess('Carte ajoutée à la collection, mais erreur lors du retrait de la wishlist.'));
@@ -145,8 +145,8 @@ const AjoutCollection = () => {
 
             {/* Affichage de la carte et boutons d'ajout */}
             {card && (
-                <div style={{ marginTop: '20px', textAlign: 'center' }}>
-                    <img src={card.images_large} alt={card.name} style={{ width: '200px', borderRadius: '8px' }} />
+                <div className='carte-affichage'>
+                    <img className='carte-image' src={card.images_large} alt={card.name} />
                     <p>{card.name} - {card.rarity}</p>
                     {card.obtained ? (
                         <p style={{ color: 'green', fontWeight: 'bold' }}>déjà dans la collection</p>

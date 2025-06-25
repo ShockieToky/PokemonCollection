@@ -4,7 +4,7 @@ import AjoutCollection from '../components/ajoutCollection';
 import '../styles/ajoutCarte.css';
 
 const AjoutCarte = () => {
-    const navigate = useNavigate(); // <-- Add this line
+    const navigate = useNavigate();
 
     return (
         <div className='ajoutCarte'>

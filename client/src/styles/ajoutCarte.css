@@ -1,37 +1,3 @@
-/* Responsive pour les tablettes */
-@media (max-width: 1024px) {
-    .ajoutCarte {
-        max-width: 90vw;
-        padding: 6vw 2vw;
-        border-radius: 10px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    }
-
-    .ajoutCarte h1 {
-        font-size: 1.5rem;
-    }
-}
-
-/* Responsive pour les téléphones */
-@media (max-width: 600px) {
-    .ajoutCarte {
-        max-width: 100vw;
-        padding: 8vw 2vw;
-        border-radius: 0;
-        box-shadow: none;
-    }
-
-    .ajoutCarte h1 {
-        font-size: 1.1rem;
-    }
-
-    .ajoutCarte button {
-        width: 100%;
-        font-size: 1rem;
-        padding: 12px 0;
-    }
-}
-
 html,
 body {
     margin: 0;
@@ -59,4 +25,14 @@ body {
 .ajout-select {
     font-weight: bold;
     background: none;
+}
+
+.carte-affichage {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.carte-image {
+    width: 200px;
+    border-radius: 8px;
 }
