@@ -211,15 +211,15 @@ main();
 
 //         for (const set of sets) {
 //             const query = `
-//                 INSERT INTO sets (id, name, series, printedTotal, total)
-//                 VALUES (?, ?, ?, ?, ?)
-//                 ON DUPLICATE KEY UPDATE
-//                     name=VALUES(name),
-//                     series=VALUES(series),
-//                     printedTotal=VALUES(printedTotal),
-//                     total=VALUES(total)
-//                     release_date=VALUES(release_date)
-//                     symbol_image=VALUES(symbol_image)
+//             INSERT INTO sets (id, name, series, printedTotal, total, releaseDate, symbol_images)
+//             VALUES (?, ?, ?, ?, ?, ?, ?)
+//             ON DUPLICATE KEY UPDATE
+//             name=VALUES(name),
+//             series=VALUES(series),
+//             printedTotal=VALUES(printedTotal),
+//             total=VALUES(total),
+//             releaseDate=VALUES(releaseDate),
+//             symbol_images=VALUES(symbol_images)
 //             `;
 //             await connection.execute(query, [
 //                 set.id,
