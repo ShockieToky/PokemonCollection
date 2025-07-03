@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import '../styles/set.css'; // Assuming you have a CSS file for styles
+import '../styles/set.css';
 
 const AffichageSet = ({ setId }) => {
     const [cards, setCards] = useState([]);
@@ -20,7 +20,7 @@ const AffichageSet = ({ setId }) => {
 
     const handleAddToCollection = (cardId) => {
         axios.post(`http://localhost:8000/api/cards/${cardId}/add-to-collection`).then(() => {
-            // Remove from wishlist as well
+            // Retire la carte de la wishlist si elle y est
             axios.post(`http://localhost:8000/api/cards/${cardId}/remove-from-wishlist`).finally(() => {
                 setCards(cards =>
                     cards.map(card =>

@@ -12,14 +12,13 @@ const InfoSet = ({ onSearchResults }) => {
     const [globalStats, setGlobalStats] = useState(null);
     const [globalRarityStats, setGlobalRarityStats] = useState([]);
 
-    // Fetch all sets on mount
     useEffect(() => {
         axios.get('http://localhost:8000/api/sets')
             .then(response => setSets(response.data))
-            .catch(error => console.error('Error fetching sets:', error));
+            .catch(error => console.error('Erreur lors de la récupération:', error));
     }, []);
 
-    // Fetch global stats when no set is selected
+    // Récupération des statistiques globales si aucun set n'est sélectionné
     useEffect(() => {
         if (!selectedSet) {
             axios.get('http://localhost:8000/api/cards/global-stats')
@@ -32,23 +31,20 @@ const InfoSet = ({ onSearchResults }) => {
         }
     }, [selectedSet]);
 
-    // Update logo and fetch stats when set is selected
+    // Mise à jour des informations du set sélectionné
     useEffect(() => {
         if (selectedSet) {
             const foundSet = sets.find(set => set.id === selectedSet || set.id === Number(selectedSet));
             setSetLogo(foundSet ? foundSet.symbol_images : '');
 
-            // Fetch stats for the selected set
             axios.get(`http://localhost:8000/api/sets/${selectedSet}/stats`)
                 .then(response => setSetStats(response.data))
                 .catch(() => setSetStats(null));
 
-            // Fetch wishlist count for the set
             axios.get(`http://localhost:8000/api/sets/${selectedSet}/wishlist-count`)
                 .then(response => setWishlistCount(response.data.count || 0))
                 .catch(() => setWishlistCount(0));
 
-            // Fetch obtained by rarity for the set
             axios.get(`http://localhost:8000/api/sets/${selectedSet}/obtained-by-rarity`)
                 .then(response => setRarityStats(response.data || []))
                 .catch(() => setRarityStats([]));
@@ -58,7 +54,7 @@ const InfoSet = ({ onSearchResults }) => {
             setWishlistCount(0);
             setRarityStats([]);
         }
-        // Notify parent of the selected set
+        // Notifier les résultats de recherche
         if (onSearchResults) {
             onSearchResults({ set: selectedSet });
         }
