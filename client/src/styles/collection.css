@@ -43,7 +43,7 @@ body {
 /* Style pour l'affichage des cartes de collection */
 .affichageCartesC {
     grid-area: 1 / 2 / 6 / 6;
-    background-color: rgb(191, 84, 8);
+    background-color: rgb(180, 46, 12);
     font-size: 18px;
     text-align: center;
 }
@@ -78,7 +78,7 @@ body {
 }
 
 .pagination-collection {
-    margin-top: 20px;
+    margin-top: 35px;
     text-align: center;
 }
 
